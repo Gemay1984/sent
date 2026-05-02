@@ -250,9 +250,9 @@ const admin = {
         <div class="glass p-6 mb-6">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
                 <h3>Noticias publicadas</h3>
-                <button class="btn btn-primary" onclick="admin.formNoticias()">
-                    <i class="fas fa-plus"></i> Nueva Noticia
-                </button>
+                <a href="admin/news-studio.html" target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                    <i class="fas fa-magic"></i> News Architect
+                </a>
             </div>
             <div id="lista-noticias"><p style="color:var(--text-muted)">Cargando...</p></div>
         </div>`;

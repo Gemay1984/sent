@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Architect | Sentido Vial</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Grotesk:wght@500;700;900&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        serif: ['Newsreader', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'editorial-bone': '#F4F1EA',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #F4F1EA;
+            color: #18181b;
+            margin: 0;
+            overflow: hidden;
+        }
+        .editorial-grid {
+            background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pulse-fast { animation: pulseFast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulseFast { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen font-sans">
+
+    <!-- Sidebar: Generator Controls -->
+    <aside class="w-full md:w-[360px] bg-zinc-900 text-white p-8 flex flex-col justify-between z-20 shrink-0 overflow-y-auto">
+        <div class="space-y-8">
+            <div class="mb-4 relative">
+                <a href="../index.html" class="absolute right-0 top-0 text-zinc-500 hover:text-white" title="Volver al Panel"><i class="fas fa-times"></i></a>
+                <img src="../sentido_vial_logo_premium_1777690282807.png" alt="Logo" class="h-12 mb-4 object-contain filter invert opacity-90">
+                <h1 class="text-4xl font-display font-black tracking-tighter leading-none italic uppercase">
+                    SV NEWS<span class="text-red-500">.</span>
+                </h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] opacity-50 mt-1 font-bold">
+                    Quindío News Architect
+                </p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <label class="text-[10px] uppercase tracking-widest text-zinc-500 font-black">Hechos del Quindío</label>
+                    <textarea id="input-facts" placeholder="Ej: Avances en el Túnel de la Línea y su impacto..." class="w-full bg-zinc-800 border border-zinc-700 p-4 text-xs h-32 focus:outline-none focus:border-red-600 resize-none transition-all placeholder:opacity-30"></textarea>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[10px] uppercase tracking-widest text-zinc-500 font-black">Acciones Multimedia</label>
+                    <div id="dropzone" class="w-full h-16 border-2 border-dashed border-zinc-700 flex items-center justify-center text-[10px] uppercase tracking-widest text-zinc-500 hover:border-red-600 transition-all cursor-pointer group" onclick="document.getElementById('input-file').click()">
+                        <span id="dropzone-text" class="group-hover:text-red-500">Subir Fotografía (Opcional)</span>
+                        <input type="file" id="input-file" accept="image/*" class="hidden" onchange="handleImage(this)">
+                    </div>
+                    <button onclick="resetEditor()" class="text-[9px] uppercase tracking-widest text-zinc-600 hover:text-red-400 transition-colors">
+                        Resetear Editor
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-generate" onclick="generateNews()" class="mt-8 w-full py-5 text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-red-600 hover:text-white">
+            <i class="fas fa-magic"></i> Generar Publicación
+        </button>
+    </aside>
+
+    <!-- Main Viewport: Editorial Preview -->
+    <main class="flex-1 relative bg-editorial-bone p-6 md:p-12 overflow-y-auto editorial-grid h-screen" id="main-view">
+        
+        <!-- Estado Vacío -->
+        <div id="state-empty" class="h-full flex flex-col items-center justify-center text-center space-y-4">
+            <i class="fas fa-newspaper text-6xl opacity-10"></i>
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.3em] font-black italic opacity-20">Esperando contenido</p>
+                <p class="text-xs italic opacity-30 mt-2 max-w-xs text-zinc-800">Define los hechos para construir la narrativa de hoy.</p>
+            </div>
+        </div>
+
+        <!-- Estado Cargando -->
+        <div id="state-loading" class="h-full flex flex-col items-center justify-center hidden">
+            <div class="w-16 h-1 bg-red-600 pulse-fast mb-8"></div>
+            <p class="text-4xl font-display font-black uppercase italic tracking-tighter animate-bounce text-zinc-900">Architecting News...</p>
+        </div>
+
+        <!-- Estado Resultado -->
+        <div id="state-result" class="hidden flex-col h-full space-y-8 fade-in">
+            <!-- Header -->
+            <div class="border-b-2 border-zinc-900 pb-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between font-display gap-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span id="out-category" class="bg-red-600 text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                            Editorial Quindío
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-40" id="out-date"></span>
+                    </div>
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-40">
+                        Marca: Sentido Vial
+                    </span>
+                </div>
+                <h2 id="out-headline" class="text-5xl md:text-7xl font-display font-black uppercase leading-[0.85] tracking-tighter text-zinc-900"></h2>
+            </div>
+
+            <!-- Grid Content -->
+            <div class="grid lg:grid-cols-3 gap-12 flex-1 min-h-0 pb-20">
+                <!-- Visual Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="relative group aspect-[4/3] bg-zinc-200 overflow-hidden shadow-2xl border border-zinc-200">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                        <img id="out-image" src="" alt="News Visual" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute bottom-6 left-6 z-20 text-white">
+                            <p class="text-[40px] font-display font-black italic tracking-tighter leading-none">SENTIDO VIAL</p>
+                            <p class="text-[9px] uppercase tracking-widest opacity-80 mt-1">Medio de Comunicación Quindiano</p>
+                        </div>
+                        <div class="absolute top-4 left-4 z-20 flex gap-2">
+                            <div class="bg-white/90 backdrop-blur px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+                                AI Content
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-red-600 pl-6 py-2">
+                        <p id="out-lead" class="text-xl md:text-2xl font-serif italic text-zinc-700 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Meta & Hashtags -->
+                <div class="flex flex-col py-2">
+                    <div class="space-y-8 flex-1">
+                        <div class="space-y-4">
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Desarrollo</h3>
+                            <div id="out-body" class="prose prose-zinc prose-sm leading-relaxed text-zinc-800 font-sans"></div>
+                        </div>
+
+                        <div class="space-y-4 pt-8 border-t border-zinc-300">
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Smart Hashtags</h3>
+                            <div id="out-hashtags" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <div class="bg-zinc-900 p-6 flex flex-col gap-4 shadow-xl">
+                            <div class="flex justify-between items-center text-white">
+                                <div class="space-y-0.5">
+                                    <p class="text-[8px] uppercase tracking-widest opacity-40">Publicación Oficial</p>
+                                    <p class="text-xs font-black uppercase tracking-tighter">Portal Sentido Vial</p>
+                                </div>
+                                <div class="flex gap-1.5">
+                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                                </div>
+                            </div>
+                            <button id="btn-publish" onclick="publishNews()" class="w-full py-3 text-[10px] font-black uppercase tracking-widest transition-all bg-white text-black hover:bg-zinc-200">
+                                PUBLICAR EN EL PORTAL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set date
+        document.getElementById('out-date').innerText = new Date().toLocaleDateString('es-CO', { month: 'long', day: 'numeric', year: 'numeric' });
+        
+        // Admin Token from localStorage (used in js/app.js)
+        const getToken = () => localStorage.getItem('sv_admin_token') || sessionStorage.getItem('sv_admin_token');
+
+        let currentImageB64 = null;
+        let generatedData = null;
+
+        function handleImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    currentImageB64 = reader.result;
+                    document.getElementById('dropzone').classList.add('border-red-600', 'bg-red-600/10');
+                    document.getElementById('dropzone-text').innerHTML = '<span class="text-red-400">Imagen Cargada ✓</span>';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function resetEditor() {
+            document.getElementById('input-facts').value = '';
+            currentImageB64 = null;
+            generatedData = null;
+            document.getElementById('dropzone').classList.remove('border-red-600', 'bg-red-600/10');
+            document.getElementById('dropzone-text').innerText = 'Subir Fotografía (Opcional)';
+            
+            document.getElementById('state-empty').classList.remove('hidden');
+            document.getElementById('state-result').classList.add('hidden');
+            document.getElementById('state-result').style.display = 'none';
+        }
+
+        async function generateNews() {
+            const facts = document.getElementById('input-facts').value.trim();
+            if (!facts) return;
+
+            const btn = document.getElementById('btn-generate');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            document.getElementById('state-empty').classList.add('hidden');
+            document.getElementById('state-result').style.display = 'none';
+            document.getElementById('state-loading').classList.remove('hidden');
+
+            try {
+                // 1. Generar texto
+                const resText = await fetch('../api/ia.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
+                    body: JSON.stringify({ prompt: facts, accion: 'noticia' })
+                });
+                const dataText = await resText.json();
+                
+                if (!dataText.ok) throw new Error(dataText.error || 'Error en IA');
+                
+                generatedData = dataText.data;
+
+                // 2. Si no hay imagen, generar una con Imagen 3
+                let finalImage = currentImageB64;
+                if (!finalImage) {
+                    btn.innerHTML = '<i class="fas fa-camera fa-fade"></i> Generando Fotografía...';
+                    const promptImg = `Fotografía periodística profesional, alta calidad, realista, Quindío Colombia: ${generatedData.titulo}`;
+                    const resImg = await fetch('../api/ia.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
+                        body: JSON.stringify({ prompt: promptImg, accion: 'imagen', aspectRatio: '16:9' })
+                    });
+                    const dataImg = await resImg.json();
+                    if (dataImg.ok && dataImg.data?.base64) {
+                        finalImage = 'data:image/jpeg;base64,' + dataImg.data.base64;
+                        currentImageB64 = finalImage;
+                    } else {
+                        finalImage = 'https://picsum.photos/seed/quindio/1200/675'; // fallback
+                    }
+                }
+
+                renderResult(generatedData, finalImage);
+
+            } catch (err) {
+                alert('Error al generar la noticia: ' + err.message);
+                document.getElementById('state-empty').classList.remove('hidden');
+                document.getElementById('state-loading').classList.add('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> Generar Publicación';
+            }
+        }
+
+        function renderResult(data, imageSrc) {
+            document.getElementById('state-loading').classList.add('hidden');
+            document.getElementById('state-result').classList.remove('hidden');
+            document.getElementById('state-result').style.display = 'flex';
+
+            // Formatear titular
+            const words = (data.titulo || 'Titular no generado').split(' ');
+            const formattedHeadline = words.map((word, i) => 
+                (i % 3 === 1) ? `<span class="italic text-red-600">${word}</span>` : word
+            ).join(' ');
+
+            document.getElementById('out-category').innerText = data.categoria || 'Editorial';
+            document.getElementById('out-headline').innerHTML = formattedHeadline;
+            document.getElementById('out-lead').innerText = `"${data.extracto || ''}"`;
+            document.getElementById('out-body').innerHTML = data.contenido || '';
+            document.getElementById('out-image').src = imageSrc;
+
+            const tagsContainer = document.getElementById('out-hashtags');
+            tagsContainer.innerHTML = '';
+            if (data.hashtags && Array.isArray(data.hashtags)) {
+                data.hashtags.forEach(tag => {
+                    const cleanTag = tag.startsWith('#') ? tag : '#' + tag;
+                    tagsContainer.innerHTML += `<span class="bg-zinc-900 text-white font-mono text-[9px] px-2 py-1.5 uppercase hover:bg-red-600 transition-colors cursor-default">${cleanTag}</span>`;
+                });
+            }
+            
+            document.getElementById('btn-publish').innerText = 'PUBLICAR EN EL PORTAL';
+            document.getElementById('btn-publish').classList.remove('bg-green-600', 'text-white');
+            document.getElementById('btn-publish').classList.add('bg-white', 'text-black');
+        }
+
+        async function publishNews() {
+            if (!generatedData) return;
+
+            const btn = document.getElementById('btn-publish');
+            btn.innerText = 'PUBLICANDO...';
+            
+            let finalImageUrl = '';
+
+            // Si es base64, subirla primero
+            if (currentImageB64 && currentImageB64.startsWith('data:image')) {
+                try {
+                    const blob = await (await fetch(currentImageB64)).blob();
+                    const file = new File([blob], 'ia-news.jpg', { type: 'image/jpeg' });
+                    const fd = new FormData();
+                    fd.append('image', file);
+                    const upRes = await fetch('../api/upload.php', {
+                        method: 'POST',
+                        headers: { 'X-Admin-Token': getToken() },
+                        body: fd
+                    });
+                    const upData = await upRes.json();
+                    if (upData.url) finalImageUrl = upData.url;
+                } catch(err) {
+                    console.error('Error subiendo imagen', err);
+                }
+            } else if (currentImageB64 && currentImageB64.startsWith('http')) {
+                finalImageUrl = currentImageB64;
+            }
+
+            // Unir hashtags al contenido
+            let htmlContent = generatedData.contenido || '';
+            if (generatedData.hashtags && generatedData.hashtags.length > 0) {
+                const tags = generatedData.hashtags.map(t => t.startsWith('#') ? t : '#'+t).join(' ');
+                htmlContent += `\n\n<p style="color:#dc2626; font-weight:bold;">${tags}</p>`;
+            }
+
+            const bodyData = {
+                titulo: generatedData.titulo,
+                extracto: generatedData.extracto,
+                contenido: htmlContent,
+                categoria: generatedData.categoria || 'Movilidad',
+                imagen_url: finalImageUrl,
+                fecha: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                const res = await fetch('../api/noticias.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
+                    body: JSON.stringify(bodyData)
+                });
+                const responseData = await res.json();
+                
+                if (res.ok) {
+                    btn.classList.remove('bg-white', 'text-black');
+                    btn.classList.add('bg-green-600', 'text-white');
+                    btn.innerText = '✓ PUBLICADO CON ÉXITO';
+                    setTimeout(() => {
+                        window.location.href = '../index.html'; // Volver al panel general
+                    }, 2000);
+                } else {
+                    throw new Error(responseData.error || 'Error desconocido');
+                }
+            } catch(e) {
+                alert('Error al publicar: ' + e.message);
+                btn.innerText = 'REINTENTAR PUBLICACIÓN';
+            }
+        }
+        
+        // Redirigir si no hay token
+        if (!getToken()) {
+            alert('Acceso denegado. Inicia sesión en el panel principal primero.');
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>
