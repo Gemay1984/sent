@@ -265,7 +265,8 @@
                         finalImage = 'data:image/jpeg;base64,' + dataImg.data.base64;
                         currentImageB64 = finalImage;
                     } else {
-                        finalImage = 'https://picsum.photos/seed/quindio/1200/675'; // fallback
+                        alert('⚠️ Google Imagen 3 rechazó generar una imagen (política de seguridad o error de conexión). Se utilizará una foto aleatoria provisional. \nDetalle: ' + (dataImg.error || ''));
+                        finalImage = 'https://picsum.photos/seed/' + Date.now() + '/1200/675'; // fallback aleatorio
                     }
                 }
 
