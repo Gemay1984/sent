@@ -250,23 +250,27 @@
                 
                 generatedData = dataText.data;
 
-                // 2. Si no hay imagen, generar una con Imagen 3
+                // 2. Si no hay imagen, generar una con IA
                 let finalImage = currentImageB64;
                 if (!finalImage) {
                     btn.innerHTML = '<i class="fas fa-camera fa-fade"></i> Generando Fotografía...';
-                    const promptImg = `Fotografía periodística profesional, alta calidad, realista, Quindío Colombia: ${generatedData.titulo}`;
-                    const resImg = await fetch('../api/ia.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
-                        body: JSON.stringify({ prompt: promptImg, accion: 'imagen', aspectRatio: '16:9' })
-                    });
-                    const dataImg = await resImg.json();
-                    if (dataImg.ok && dataImg.data?.base64) {
-                        finalImage = 'data:image/jpeg;base64,' + dataImg.data.base64;
+                    const promptImg = `Fotografia realista periodistica, alta calidad, Quindio Colombia: ${generatedData.titulo}`;
+                    const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptImg)}?width=1000&height=1000&nologo=true`;
+                    
+                    try {
+                        const resPoll = await fetch(imgUrl);
+                        if (!resPoll.ok) throw new Error('Error en el servidor de IA visual');
+                        
+                        const blob = await resPoll.blob();
+                        finalImage = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        });
                         currentImageB64 = finalImage;
-                    } else {
-                        alert('⚠️ Google Imagen 3 rechazó generar una imagen (política de seguridad o error de conexión). Se utilizará una foto aleatoria provisional. \nDetalle: ' + (dataImg.error || ''));
-                        finalImage = 'https://picsum.photos/seed/' + Date.now() + '/1200/675'; // fallback aleatorio
+                    } catch (err) {
+                        alert('⚠️ Hubo un fallo generando la imagen con IA. Se pondrá una genérica. \nDetalle: ' + err.message);
+                        finalImage = 'https://picsum.photos/seed/' + Date.now() + '/1000/1000'; // fallback aleatorio
                     }
                 }
 
