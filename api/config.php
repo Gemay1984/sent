@@ -4,10 +4,10 @@
 // NUNCA subir a un repositorio público
 // ================================================================
 
-define('DB_HOST', 'localhost');          // Siempre localhost en Hostinger
-define('DB_NAME', 'sentidovial_db');    // Nombre de tu BD en hPanel
-define('DB_USER', 'tu_usuario_bd');     // Usuario creado en hPanel → MySQL
-define('DB_PASS', 'tu_contrasena_bd');  // Contraseña de la BD
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'u638339419_sentido');
+define('DB_USER', 'u638339419_admin');
+define('DB_PASS', 'Vial2026');
 
 // ── Gemini AI (guardada SOLO en el servidor, nunca en frontend) ──
 define('GEMINI_API_KEY', 'TU_NUEVA_CLAVE_GEMINI_AQUI');
