@@ -1,0 +1,7 @@
+# Ignorar archivos temporales
+.DS_Store
+Thumbs.db
+
+# Ignorar las subidas de los usuarios pero conservar la carpeta
+api/uploads/*
+!api/uploads/.gitkeep

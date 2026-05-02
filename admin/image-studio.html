@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Studio — Sentido Vial</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:#0a0f1e;color:#f8fafc;min-height:100vh;}
+.topbar{background:#0f172a;border-bottom:1px solid #1e293b;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.topbar h1{font-size:1.2rem;font-weight:900;color:#fac213;}
+.topbar a{color:#94a3b8;text-decoration:none;font-size:0.85rem;}
+.layout{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 60px);}
+.sidebar{background:#0f172a;border-right:1px solid #1e293b;overflow-y:auto;padding:1.5rem;}
+.main{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;}
+.section-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#fac213;margin-bottom:0.8rem;margin-top:1.5rem;}
+.section-title:first-child{margin-top:0;}
+label{font-size:0.8rem;color:#94a3b8;display:block;margin-bottom:0.4rem;}
+input[type=range]{width:100%;accent-color:#fac213;}
+input[type=number],select{width:100%;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:0.5rem;border-radius:6px;font-size:0.85rem;margin-bottom:0.8rem;}
+.upload-zone{border:2px dashed #334155;border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:0.3s;margin-bottom:1rem;}
+.upload-zone:hover{border-color:#fac213;background:rgba(250,194,19,0.05);}
+.upload-zone i{font-size:2rem;color:#475569;margin-bottom:0.5rem;display:block;}
+.upload-zone p{font-size:0.8rem;color:#64748b;}
+.pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:1rem;}
+.pos-btn{background:#1e293b;border:1px solid #334155;border-radius:4px;padding:0.4rem;cursor:pointer;text-align:center;font-size:0.6rem;color:#64748b;transition:0.2s;}
+.pos-btn:hover,.pos-btn.active{background:#fac213;color:#0a0f1e;border-color:#fac213;font-weight:700;}
+.canvas-wrap{position:relative;box-shadow:0 0 60px rgba(0,0,0,0.8);border-radius:8px;overflow:hidden;}
+canvas{display:block;max-width:100%;max-height:70vh;}
+.sizes-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1rem;}
+.size-btn{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:0.6rem;cursor:pointer;text-align:center;transition:0.2s;}
+.size-btn:hover{border-color:#fac213;}
+.size-btn strong{display:block;font-size:0.75rem;color:#f8fafc;}
+.size-btn span{font-size:0.6rem;color:#64748b;}
+.dl-btn{width:100%;background:#fac213;color:#0a0f1e;border:none;border-radius:8px;padding:0.7rem;font-weight:900;font-size:0.85rem;cursor:pointer;margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:0.2s;}
+.dl-btn:hover{background:#eab308;}
+.dl-all{background:#16a34a;color:white;}
+.dl-all:hover{background:#15803d;}
+.ia-btn{width:100%;background:#7c3aed;color:white;border:none;border-radius:8px;padding:0.7rem;font-weight:700;font-size:0.82rem;cursor:pointer;margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+.ia-btn:hover{background:#6d28d9;}
+.ia-result{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:0.8rem;font-size:0.78rem;color:#94a3b8;margin-top:0.5rem;line-height:1.6;display:none;}
+.overlay-text-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;}
+.overlay-text-row input{flex:1;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:0.4rem;border-radius:6px;font-size:0.8rem;}
+.toggle{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;}
+.toggle input[type=checkbox]{accent-color:#fac213;width:16px;height:16px;}
+.toggle label{margin:0;color:#f8fafc;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><i class="fas fa-magic"></i> Image Studio — Sentido Vial</h1>
+  <a href="../index.html"><i class="fas fa-arrow-left"></i> Volver al Portal</a>
+</div>
+
+<div class="layout">
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<div class="sidebar">
+
+  <div class="section-title"><i class="fas fa-image"></i> Foto Principal</div>
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+    <i class="fas fa-cloud-upload-alt"></i>
+    <p>Clic o arrastra tu foto aquí<br><small style="color:#475569">JPG, PNG, WEBP</small></p>
+  </div>
+  <input type="file" id="file-input" accept="image/*" style="display:none">
+
+  <div class="section-title"><i class="fas fa-stamp"></i> Logo</div>
+  <label>URL del Logo</label>
+  <input type="text" id="logo-url" value="https://i.postimg.cc/brKwkSQD/recrea-este-logo-en-fondo-202605012011.jpg"
+         style="width:100%;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:0.5rem;border-radius:6px;font-size:0.78rem;margin-bottom:0.5rem;">
+  <button class="dl-btn" style="margin-bottom:0.5rem;" onclick="reloadLogo()">
+    <i class="fas fa-sync"></i> Cargar Logo
+  </button>
+  <label>Tamaño del logo: <span id="logo-size-val">25</span>%</label>
+  <input type="range" id="logo-size" min="5" max="60" value="25" oninput="document.getElementById('logo-size-val').textContent=this.value;redraw()">
+  <label>Opacidad: <span id="logo-op-val">90</span>%</label>
+  <input type="range" id="logo-op" min="10" max="100" value="90" oninput="document.getElementById('logo-op-val').textContent=this.value;redraw()">
+
+  <div class="section-title">Posición del Logo</div>
+  <div class="pos-grid">
+    <div class="pos-btn" onclick="setPos('tl',this)">↖ Arriba<br>Izq</div>
+    <div class="pos-btn" onclick="setPos('tc',this)">↑ Arriba<br>Centro</div>
+    <div class="pos-btn" onclick="setPos('tr',this)">↗ Arriba<br>Der</div>
+    <div class="pos-btn" onclick="setPos('ml',this)">← Medio<br>Izq</div>
+    <div class="pos-btn" onclick="setPos('mc',this)">✦ Centro</div>
+    <div class="pos-btn" onclick="setPos('mr',this)">→ Medio<br>Der</div>
+    <div class="pos-btn" onclick="setPos('bl',this)">↙ Abajo<br>Izq</div>
+    <div class="pos-btn active" onclick="setPos('bc',this)">↓ Abajo<br>Centro</div>
+    <div class="pos-btn" onclick="setPos('br',this)">↘ Abajo<br>Der</div>
+  </div>
+
+  <div class="section-title"><i class="fas fa-layer-group"></i> Efectos</div>
+  <div class="toggle">
+    <input type="checkbox" id="fx-gradient" checked onchange="redraw()">
+    <label for="fx-gradient">Gradiente inferior (profesional)</label>
+  </div>
+  <div class="toggle">
+    <input type="checkbox" id="fx-vignette" onchange="redraw()">
+    <label for="fx-vignette">Viñeta oscura</label>
+  </div>
+  <div class="toggle">
+    <input type="checkbox" id="fx-overlay" onchange="redraw()">
+    <label for="fx-overlay">Overlay de color</label>
+  </div>
+  <div id="overlay-color-row" style="display:none">
+    <input type="color" id="overlay-color" value="#0a0f1e" style="width:100%;height:30px;border-radius:6px;border:none;cursor:pointer;margin-bottom:0.5rem;" onchange="redraw()">
+    <label>Intensidad: <span id="overlay-int-val">30</span>%</label>
+    <input type="range" id="overlay-int" min="5" max="80" value="30" oninput="document.getElementById('overlay-int-val').textContent=this.value;redraw()">
+  </div>
+
+  <div class="section-title"><i class="fas fa-font"></i> Texto Superpuesto</div>
+  <div class="toggle">
+    <input type="checkbox" id="show-text" onchange="redraw()">
+    <label for="show-text">Añadir texto</label>
+  </div>
+  <input type="text" id="overlay-text-main" placeholder="Titular de la noticia" oninput="redraw()">
+  <input type="text" id="overlay-text-sub" placeholder="Subtítulo o fecha" oninput="redraw()">
+
+  <div class="section-title"><i class="fas fa-paint-brush"></i> Generar Imagen (IA)</div>
+  <textarea id="ia-prompt-img" placeholder="Ej: Foto realista de un carro deportivo azul en las calles de Armenia Colombia" rows="3" style="width:100%;background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:0.5rem;border-radius:6px;font-size:0.75rem;margin-bottom:0.5rem;"></textarea>
+  <button class="ia-btn" id="btn-gen-img" onclick="generarImagenIA()" style="background:#059669;margin-bottom:1rem;margin-top:0;">
+    <i class="fas fa-image"></i> Crear Imagen Nueva
+  </button>
+
+  <div class="section-title"><i class="fas fa-robot"></i> Análisis IA (Gemini)</div>
+  <button class="ia-btn" onclick="analizarConIA()">
+    <i class="fas fa-magic"></i> Analizar imagen con IA
+  </button>
+  <div class="ia-result" id="ia-result"></div>
+
+</div><!-- /sidebar -->
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+  <div id="no-image" style="text-align:center;color:#475569;">
+    <i class="fas fa-image" style="font-size:4rem;margin-bottom:1rem;display:block;"></i>
+    <p>Sube una foto para comenzar</p>
+  </div>
+
+  <div id="canvas-area" style="display:none;width:100%;max-width:700px;">
+    <div class="canvas-wrap">
+      <canvas id="main-canvas"></canvas>
+    </div>
+
+    <!-- Tamaños de exportación -->
+    <div style="margin-top:1.5rem;">
+      <div class="section-title" style="margin-top:0;"><i class="fas fa-share-alt"></i> Exportar para Redes Sociales</div>
+      <div class="sizes-grid">
+        <div class="size-btn" onclick="exportSize('instagram-square')">
+          <i class="fab fa-instagram" style="color:#E1306C"></i>
+          <strong>Instagram Post</strong>
+          <span>1080 × 1080 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('instagram-portrait')">
+          <i class="fab fa-instagram" style="color:#E1306C"></i>
+          <strong>Instagram Portrait</strong>
+          <span>1080 × 1350 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('instagram-story')">
+          <i class="fab fa-instagram" style="color:#E1306C"></i>
+          <strong>Stories / Reels</strong>
+          <span>1080 × 1920 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('facebook-post')">
+          <i class="fab fa-facebook" style="color:#1877F2"></i>
+          <strong>Facebook Post</strong>
+          <span>1200 × 630 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('facebook-cover')">
+          <i class="fab fa-facebook" style="color:#1877F2"></i>
+          <strong>Facebook Cover</strong>
+          <span>820 × 312 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('twitter-post')">
+          <i class="fab fa-x-twitter" style="color:#f8fafc"></i>
+          <strong>Twitter / X Post</strong>
+          <span>1600 × 900 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('whatsapp')">
+          <i class="fab fa-whatsapp" style="color:#25D366"></i>
+          <strong>WhatsApp Status</strong>
+          <span>1080 × 1920 px</span>
+        </div>
+        <div class="size-btn" onclick="exportSize('youtube')">
+          <i class="fab fa-youtube" style="color:#FF0000"></i>
+          <strong>YouTube Thumb</strong>
+          <span>1280 × 720 px</span>
+        </div>
+      </div>
+      <button class="dl-btn dl-all" onclick="exportAll()">
+        <i class="fas fa-download"></i> DESCARGAR TODOS LOS TAMAÑOS
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── Estado global ──────────────────────────────────────────────────
+let photoImg = null;
+let logoImg  = null;
+let logoPos  = 'bc'; // posición por defecto
+
+const SIZES = {
+  'instagram-square':  { w:1080, h:1080,  name:'Instagram_Post_1080x1080' },
+  'instagram-portrait':{ w:1080, h:1350,  name:'Instagram_Portrait_1080x1350' },
+  'instagram-story':   { w:1080, h:1920,  name:'Instagram_Stories_1080x1920' },
+  'facebook-post':     { w:1200, h:630,   name:'Facebook_Post_1200x630' },
+  'facebook-cover':    { w:820,  h:312,   name:'Facebook_Cover_820x312' },
+  'twitter-post':      { w:1600, h:900,   name:'Twitter_Post_1600x900' },
+  'whatsapp':          { w:1080, h:1920,  name:'WhatsApp_Status_1080x1920' },
+  'youtube':           { w:1280, h:720,   name:'YouTube_Thumb_1280x720' },
+};
+
+// ── Carga de foto ──────────────────────────────────────────────────
+document.getElementById('file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => { photoImg = img; showCanvas(); redraw(); };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Drag & drop
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='#fac213'; });
+zone.addEventListener('dragleave', () => { zone.style.borderColor='#334155'; });
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.style.borderColor='#334155';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    document.getElementById('file-input').files;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => { photoImg = img; showCanvas(); redraw(); };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ── Carga de logo ─────────────────────────────────────────────────
+function reloadLogo() {
+  const url = document.getElementById('logo-url').value.trim();
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload  = () => { logoImg = img; redraw(); };
+  img.onerror = () => {
+    // Si CORS falla, intentar via proxy
+    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    const img2  = new Image();
+    img2.crossOrigin = 'anonymous';
+    img2.onload  = () => { logoImg = img2; redraw(); };
+    img2.onerror = () => alert('No se pudo cargar el logo. Descárgalo y súbelo directamente.');
+    img2.src = proxy;
+  };
+  img.src = url;
+}
+reloadLogo();
+
+// ── Posición ──────────────────────────────────────────────────────
+function setPos(pos, btn) {
+  logoPos = pos;
+  document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  redraw();
+}
+
+// ── Overlay color toggle ──────────────────────────────────────────
+document.getElementById('fx-overlay').addEventListener('change', function() {
+  document.getElementById('overlay-color-row').style.display = this.checked ? 'block' : 'none';
+  redraw();
+});
+
+// ── Mostrar canvas ────────────────────────────────────────────────
+function showCanvas() {
+  document.getElementById('no-image').style.display = 'none';
+  document.getElementById('canvas-area').style.display = 'block';
+}
+
+// ── REDRAW principal ──────────────────────────────────────────────
+function redraw() {
+  if (!photoImg) return;
+  const canvas = document.getElementById('main-canvas');
+  renderToCanvas(canvas, photoImg.width, photoImg.height);
+}
+
+function renderToCanvas(canvas, W, H) {
+  if (!photoImg) return;
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // 1. Foto de fondo (cover)
+  const scale = Math.max(W / photoImg.width, H / photoImg.height);
+  const sw = photoImg.width * scale;
+  const sh = photoImg.height * scale;
+  ctx.drawImage(photoImg, (W - sw) / 2, (H - sh) / 2, sw, sh);
+
+  // 2. Overlay de color
+  if (document.getElementById('fx-overlay').checked) {
+    const col = document.getElementById('overlay-color').value;
+    const alpha = parseInt(document.getElementById('overlay-int').value) / 100;
+    ctx.fillStyle = col;
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+
+  // 3. Viñeta
+  if (document.getElementById('fx-vignette').checked) {
+    const vg = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.8);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.75)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 4. Gradiente inferior
+  if (document.getElementById('fx-gradient').checked) {
+    const grd = ctx.createLinearGradient(0, H * 0.5, 0, H);
+    grd.addColorStop(0, 'rgba(10,15,30,0)');
+    grd.addColorStop(1, 'rgba(10,15,30,0.92)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 5. Texto superpuesto
+  if (document.getElementById('show-text').checked) {
+    const mainTxt = document.getElementById('overlay-text-main').value;
+    const subTxt  = document.getElementById('overlay-text-sub').value;
+    if (mainTxt) {
+      ctx.font = `bold ${Math.floor(W * 0.045)}px Montserrat, Arial`;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 10;
+      ctx.textAlign = 'center';
+      ctx.fillText(mainTxt, W / 2, H * 0.78, W * 0.9);
+    }
+    if (subTxt) {
+      ctx.font = `${Math.floor(W * 0.025)}px Montserrat, Arial`;
+      ctx.fillStyle = '#fac213';
+      ctx.fillText(subTxt, W / 2, H * 0.84, W * 0.9);
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  // 6. Logo
+  if (logoImg) {
+    const logoSizePct = parseInt(document.getElementById('logo-size').value) / 100;
+    const logoW = W * logoSizePct;
+    const logoH = logoW * (logoImg.height / logoImg.width);
+    const pad   = W * 0.04;
+
+    let lx = 0, ly = 0;
+    const pos = logoPos;
+
+    // X
+    if (pos.includes('l')) lx = pad;
+    else if (pos.includes('r')) lx = W - logoW - pad;
+    else lx = (W - logoW) / 2;
+
+    // Y
+    if (pos.includes('t')) ly = pad;
+    else if (pos.includes('b')) ly = H - logoH - pad;
+    else ly = (H - logoH) / 2;
+
+    ctx.globalAlpha = parseInt(document.getElementById('logo-op').value) / 100;
+    ctx.drawImage(logoImg, lx, ly, logoW, logoH);
+    ctx.globalAlpha = 1;
+  }
+}
+
+// ── Exportar un tamaño ────────────────────────────────────────────
+function exportSize(sizeKey) {
+  if (!photoImg) return alert('Sube una foto primero.');
+  const { w, h, name } = SIZES[sizeKey];
+  const offCanvas = document.createElement('canvas');
+  renderToCanvas(offCanvas, w, h);
+  const link = document.createElement('a');
+  link.download = `SentidoVial_${name}.jpg`;
+  link.href = offCanvas.toDataURL('image/jpeg', 0.95);
+  link.click();
+}
+
+// ── Exportar TODOS ────────────────────────────────────────────────
+async function exportAll() {
+  if (!photoImg) return alert('Sube una foto primero.');
+  for (const [key, { w, h, name }] of Object.entries(SIZES)) {
+    const offCanvas = document.createElement('canvas');
+    renderToCanvas(offCanvas, w, h);
+    await new Promise(resolve => {
+      const link = document.createElement('a');
+      link.download = `SentidoVial_${name}.jpg`;
+      link.href = offCanvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+      setTimeout(resolve, 400);
+    });
+  }
+}
+
+// ── Análisis IA con Gemini ────────────────────────────────────────
+async function analizarConIA() {
+  if (!photoImg) return alert('Sube una foto primero.');
+
+  const btn = document.querySelector('.ia-btn');
+  btn.disabled = true; btn.innerHTML = '⏳ Analizando...';
+
+  // Convertir canvas actual a base64
+  const canvas = document.getElementById('main-canvas');
+  const b64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+
+  try {
+    // 1️⃣ Intentar vía PHP proxy (producción en Hostinger)
+    const proxyRes = await fetch('../api/ia.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getAdminToken() },
+      body: JSON.stringify({
+        prompt: 'Analiza esta imagen periodística. Sugiere: 1) El mejor texto titular para una noticia de tránsito en Armenia, Quindío. 2) Dónde posicionar el logo (arriba-izquierda, abajo-derecha, etc.) para mejor composición visual. 3) Efecto recomendado. Responde en español, máximo 4 líneas.',
+        accion: 'imagen',
+        imagen_b64: b64
+      }),
+      signal: AbortSignal.timeout(4000)
+    });
+    if (proxyRes.ok) {
+        const data = await proxyRes.json();
+        mostrarResultadoIA(data.data?.texto || data.data?.contenido || JSON.stringify(data.data));
+        return;
+    }
+  } catch (_) { }
+
+  try {
+    // 2️⃣ Fallback: llamada directa a Gemini desde el navegador
+    const GEMINI_KEY = 'AIzaSyAoG5DH0h8ufXKt6nTzmX14fqQM0e6R8u8';
+    const MODELOS = [
+        'gemini-3.1-flash',
+        'gemini-3.0-flash',
+        'gemini-3.0-pro',
+        'gemini-2.5-flash',
+        'gemini-2.0-flash',
+        'gemini-1.5-flash'
+    ];
+    
+    let rawText = '';
+    let ultimoError = '';
+
+    for (const modelo of MODELOS) {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_KEY}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: "Analiza esta imagen periodística. Sugiere: 1) El mejor texto titular para una noticia de tránsito en Armenia, Quindío. 2) Dónde posicionar el logo (arriba-izquierda, abajo-derecha, etc.) para mejor composición visual. 3) Efecto recomendado. Responde en español, máximo 4 líneas." },
+                            { inline_data: { mime_type: "image/jpeg", data: b64 } }
+                        ]
+                    }],
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+                })
+            });
+            
+            const gemData = await res.json();
+            if (gemData.error) {
+                ultimoError = gemData.error.message;
+                continue; // probar siguiente modelo
+            }
+            
+            rawText = gemData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            if (rawText) break; // funcionó
+        } catch (e) {
+            ultimoError = e.message;
+            continue;
+        }
+    }
+
+    if (!rawText) throw new Error(ultimoError);
+    mostrarResultadoIA(rawText);
+
+  } catch(e) {
+    alert('Error de conexión con la IA.\nEsto suele pasar si se excede el límite gratuito de Google o la API Key no tiene permisos para el modelo.\n\nDetalle técnico: ' + e.message);
+    const btn = document.querySelector('.ia-btn');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic"></i> Analizar imagen con IA';
+  }
+}
+
+function mostrarResultadoIA(texto) {
+    const resultado = document.getElementById('ia-result');
+    resultado.style.display = 'block';
+    resultado.innerHTML = '<i class="fas fa-robot" style="color:#7c3aed;"></i> ' + (texto || '').replace(/\n/g, '<br>');
+    
+    const btn = document.querySelector('.ia-btn');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic"></i> Analizar imagen con IA';
+}
+
+async function generarImagenIA() {
+    const prompt = document.getElementById('ia-prompt-img').value.trim();
+    if (!prompt) return alert('Por favor escribe qué tipo de imagen deseas generar.');
+
+    const btn = document.getElementById('btn-gen-img');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando imagen...';
+
+    try {
+        const GEMINI_KEY = 'AIzaSyAoG5DH0h8ufXKt6nTzmX14fqQM0e6R8u8';
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_KEY}`;
+        
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                instances: [ { prompt: prompt } ],
+                parameters: { sampleCount: 1, aspectRatio: "16:9" }
+            })
+        });
+
+        const data = await res.json();
+        
+        if (data.error) throw new Error(data.error.message);
+        
+        if (data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
+            const b64img = data.predictions[0].bytesBase64Encoded;
+            const img = new Image();
+            img.onload = () => {
+                photoImg = img;
+                showCanvas();
+                redraw();
+            };
+            img.src = 'data:image/jpeg;base64,' + b64img;
+        } else {
+            throw new Error('La respuesta de la IA no contiene una imagen válida.');
+        }
+
+    } catch (e) {
+        alert('Error al generar imagen.\nDetalle: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-image"></i> Crear Imagen Nueva';
+    }
+}
+
+function getAdminToken() {
+  // Leer token del sessionStorage si está disponible
+  return sessionStorage.getItem('sv_admin_token') || '';
+}
+</script>
+</body>
+</html>
