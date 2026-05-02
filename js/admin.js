@@ -32,6 +32,7 @@ const admin = {
 
         if (user === 'admin' && pass === 'vial2026') {
             this.token = await this.hashToken('vial2026_admin_token_secreto');
+            sessionStorage.setItem('sv_admin_token', this.token);
             this.showDashboard();
         } else {
             alert('❌ Credenciales incorrectas. Use: admin / vial2026');
@@ -237,6 +238,7 @@ const admin = {
 
     logout() {
         this.token = null;
+        sessionStorage.removeItem('sv_admin_token');
         document.getElementById('admin-dashboard-view').classList.add('hidden');
         document.getElementById('admin-login-view').classList.remove('hidden');
     },
