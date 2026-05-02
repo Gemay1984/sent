@@ -162,43 +162,67 @@
                 <button onclick="router.navigate('home')" class="btn btn-outline" style="margin-bottom: 2rem; border-color: var(--text-muted); color: var(--text-light);"><i class="fas fa-arrow-left"></i> Volver a Noticias</button>
                 
                 <!-- Editorial Layout -->
-                <div class="flex flex-col h-full space-y-8 animate-fade-in" style="background: var(--bg-card); border-radius: 1rem; overflow: hidden;">
+                <div style="display: flex; flex-direction: column; height: 100%; gap: 2rem; background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 1rem; overflow: hidden; animation: fadeInUp 0.8s forwards;">
                     <!-- Header -->
-                    <div style="padding: 3rem 3rem 1rem 3rem; border-bottom: 2px solid rgba(255,255,255,0.05);">
-                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; font-family: 'Space Grotesk', sans-serif;">
+                    <div style="padding: 3rem 3rem 1rem 3rem; border-bottom: 1px solid var(--glass-border);">
+                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem;">
                             <div style="display: flex; align-items: center; gap: 1rem;">
-                                <span id="pub-categoria" style="background: #dc2626; color: white; padding: 0.3rem 1rem; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">Categoria</span>
-                                <span id="pub-fecha" style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5;">Fecha</span>
+                                <span id="pub-categoria" style="background: var(--primary); color: var(--bg-dark); padding: 0.3rem 1rem; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">Noticia</span>
+                                <span id="pub-fecha" style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);">Fecha</span>
                             </div>
-                            <span style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5;">Portal Sentido Vial</span>
+                            <span style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);">Marca: Sentido Vial</span>
                         </div>
-                        <h2 id="pub-titulo" class="font-serif" style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.05em; color: #f8fafc; margin: 0;">Titular</h2>
+                        <h2 id="pub-titulo" class="font-serif" style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -0.02em; color: var(--text-main); margin: 0;">Titular</h2>
                     </div>
 
                     <!-- Grid Content -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; padding: 0 3rem 3rem 3rem;">
                         <!-- Visual Area -->
                         <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 2rem;">
-                            <div style="position: relative; aspect-ratio: 16/9; background: #1e293b; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-                                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 10;"></div>
+                            <div style="position: relative; aspect-ratio: 16/9; background: var(--bg-dark); border-radius: 0.5rem; overflow: hidden; box-shadow: var(--shadow-premium); border: 1px solid var(--glass-border);">
+                                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(2,6,23,0.9), transparent); z-index: 10;"></div>
                                 <img id="pub-imagen" src="" alt="Imagen Noticia" style="width: 100%; height: 100%; object-fit: cover;">
                                 <div style="position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 20; color: white;">
-                                    <p style="font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 900; font-style: italic; letter-spacing: -0.05em; line-height: 1; margin: 0;">SENTIDO VIAL</p>
+                                    <p style="font-family: var(--font-title); font-size: 2.5rem; font-weight: 900; font-style: italic; letter-spacing: -0.05em; line-height: 1; margin: 0;">SENTIDO VIAL</p>
                                     <p style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; margin-top: 0.25rem;">Medio de Comunicación Quindiano</p>
                                 </div>
                             </div>
                             
-                            <div style="border-left: 4px solid #dc2626; padding-left: 1.5rem; padding-top: 0.5rem; padding-bottom: 0.5rem;">
-                                <p id="pub-extracto" class="font-serif" style="font-size: clamp(1.2rem, 3vw, 1.6rem); font-style: italic; color: #cbd5e1; line-height: 1.6; margin: 0;"></p>
+                            <div style="border-left: 4px solid var(--primary); padding-left: 1.5rem; padding-top: 0.5rem; padding-bottom: 0.5rem; background: rgba(2,6,23,0.3); border-radius: 0 0.5rem 0.5rem 0;">
+                                <p id="pub-extracto" class="font-serif" style="font-size: clamp(1.2rem, 3vw, 1.6rem); font-style: italic; color: var(--text-main); line-height: 1.6; margin: 0; opacity: 0.9;"></p>
+                            </div>
+
+                            <div style="flex: 1;">
+                                <h3 style="font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 1rem;">Desarrollo</h3>
+                                <div id="pub-contenido" style="line-height: 1.8; font-size: 1.05rem; color: var(--text-main);"></div>
                             </div>
                         </div>
 
-                        <!-- Content Area -->
-                        <div style="display: flex; flex-direction: column; padding-top: 0.5rem;">
-                            <div style="flex: 1;">
-                                <h3 style="font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; margin-bottom: 1rem;">Desarrollo</h3>
-                                <div id="pub-contenido" style="line-height: 1.8; font-size: 1.05rem; color: #e2e8f0;"></div>
+                        <!-- Content Area / Sidebar -->
+                        <div style="display: flex; flex-direction: column; gap: 2rem;">
+                            
+                            <!-- Espacio Publicitario -->
+                            <div style="border: 1px solid var(--glass-border); background: rgba(2,6,23,0.5); border-radius: 0.5rem; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center;">
+                                <i class="fas fa-ad" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-family: monospace;">Espacio Publicitario</span>
+                                <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 0.5rem;">Banner 300x250</p>
                             </div>
+
+                            <!-- Meta -->
+                            <div style="background: var(--bg-dark); padding: 1.5rem; border-radius: 0.5rem; border: 1px solid var(--glass-border); box-shadow: var(--shadow-premium);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <div>
+                                        <p style="font-size: 0.5rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);">Publicación Oficial</p>
+                                        <p style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-main);">Portal Sentido Vial</p>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -361,7 +385,7 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/app.js?v=3.1"></script>
+    <script src="js/app.js?v=3.2"></script>
     <script src="js/admin.js?v=3.0"></script>
 </body>
 </html>

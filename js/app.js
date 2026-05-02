@@ -315,10 +315,10 @@ ${sim.embedCode}
         const extracto = n.extracto || n.excerpt || '';
         const contenido = n.contenido || n.content || '';
 
-        // Formatear titular (cada 3ra palabra en rojo cursivo para estilo revista)
+        // Formatear titular (cada 3ra palabra en color primario cursivo para estilo revista)
         const words = titulo.split(' ');
         const formattedHeadline = words.map((word, i) => 
-            (i % 3 === 1) ? `<span style="font-style: italic; color: #dc2626;">${word}</span>` : word
+            (i % 3 === 1) ? `<span style="font-style: italic; color: var(--primary);">${word}</span>` : word
         ).join(' ');
 
         document.getElementById('pub-titulo').innerHTML = formattedHeadline;

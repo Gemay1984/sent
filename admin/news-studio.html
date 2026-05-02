@@ -57,13 +57,13 @@
 <body class="flex flex-col md:flex-row h-screen font-sans">
 
     <!-- Sidebar: Generator Controls -->
-    <aside class="w-full md:w-[360px] bg-zinc-900 text-white p-8 flex flex-col justify-between z-20 shrink-0 overflow-y-auto">
+    <aside class="w-full md:w-[360px] bg-slate-900 text-white p-8 flex flex-col justify-between z-20 shrink-0 overflow-y-auto border-r border-slate-800">
         <div class="space-y-8">
             <div class="mb-4 relative">
-                <a href="../index.html" class="absolute right-0 top-0 text-zinc-500 hover:text-white" title="Volver al Panel"><i class="fas fa-times"></i></a>
-                <img src="../sentido_vial_logo_premium_1777690282807.png" alt="Logo" class="h-12 mb-4 object-contain filter invert opacity-90">
+                <a href="../index.html" class="absolute right-0 top-0 text-slate-500 hover:text-white" title="Volver al Panel"><i class="fas fa-times"></i></a>
+                <img src="../sentido_vial_logo_premium_1777690282807.png" alt="Logo" class="h-12 mb-4 object-contain">
                 <h1 class="text-4xl font-display font-black tracking-tighter leading-none italic uppercase">
-                    SV NEWS<span class="text-red-500">.</span>
+                    SV NEWS<span class="text-yellow-400">.</span>
                 </h1>
                 <p class="text-[10px] uppercase tracking-[0.2em] opacity-50 mt-1 font-bold">
                     Quindío News Architect
@@ -72,115 +72,119 @@
 
             <div class="space-y-6">
                 <div class="space-y-3">
-                    <label class="text-[10px] uppercase tracking-widest text-zinc-500 font-black">Hechos del Quindío</label>
-                    <textarea id="input-facts" placeholder="Ej: Avances en el Túnel de la Línea y su impacto..." class="w-full bg-zinc-800 border border-zinc-700 p-4 text-xs h-32 focus:outline-none focus:border-red-600 resize-none transition-all placeholder:opacity-30"></textarea>
+                    <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black">Hechos del Quindío</label>
+                    <textarea id="input-facts" placeholder="Ej: Avances en el Túnel de la Línea y su impacto..." class="w-full bg-slate-950 border border-slate-700 p-4 text-xs h-32 focus:outline-none focus:border-yellow-400 resize-none transition-all placeholder:opacity-30 text-slate-200"></textarea>
                 </div>
 
                 <div class="space-y-3">
-                    <label class="text-[10px] uppercase tracking-widest text-zinc-500 font-black">Acciones Multimedia</label>
-                    <div id="dropzone" class="w-full h-16 border-2 border-dashed border-zinc-700 flex items-center justify-center text-[10px] uppercase tracking-widest text-zinc-500 hover:border-red-600 transition-all cursor-pointer group" onclick="document.getElementById('input-file').click()">
-                        <span id="dropzone-text" class="group-hover:text-red-500">Subir Fotografía (Opcional)</span>
+                    <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black">Acciones Multimedia</label>
+                    <div id="dropzone" class="w-full h-16 border-2 border-dashed border-slate-700 flex items-center justify-center text-[10px] uppercase tracking-widest text-slate-500 hover:border-yellow-400 transition-all cursor-pointer group" onclick="document.getElementById('input-file').click()">
+                        <span id="dropzone-text" class="group-hover:text-yellow-400">Subir Fotografía (Opcional)</span>
                         <input type="file" id="input-file" accept="image/*" class="hidden" onchange="handleImage(this)">
                     </div>
-                    <button onclick="resetEditor()" class="text-[9px] uppercase tracking-widest text-zinc-600 hover:text-red-400 transition-colors">
+                    <button onclick="resetEditor()" class="text-[9px] uppercase tracking-widest text-slate-500 hover:text-yellow-400 transition-colors">
                         Resetear Editor
                     </button>
                 </div>
             </div>
         </div>
 
-        <button id="btn-generate" onclick="generateNews()" class="mt-8 w-full py-5 text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-red-600 hover:text-white">
+        <button id="btn-generate" onclick="generateNews()" class="mt-8 w-full py-5 text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 bg-yellow-500 text-slate-900 hover:bg-yellow-400 hover:text-slate-900">
             <i class="fas fa-magic"></i> Generar Publicación
         </button>
     </aside>
 
     <!-- Main Viewport: Editorial Preview -->
-    <main class="flex-1 relative bg-editorial-bone p-6 md:p-12 overflow-y-auto editorial-grid h-screen" id="main-view">
+    <main class="flex-1 relative bg-slate-950 p-6 md:p-12 overflow-y-auto editorial-grid h-screen" id="main-view">
         
         <!-- Estado Vacío -->
         <div id="state-empty" class="h-full flex flex-col items-center justify-center text-center space-y-4">
-            <i class="fas fa-newspaper text-6xl opacity-10"></i>
+            <i class="fas fa-newspaper text-6xl text-slate-800"></i>
             <div>
-                <p class="text-[10px] uppercase tracking-[0.3em] font-black italic opacity-20">Esperando contenido</p>
-                <p class="text-xs italic opacity-30 mt-2 max-w-xs text-zinc-800">Define los hechos para construir la narrativa de hoy.</p>
+                <p class="text-[10px] uppercase tracking-[0.3em] font-black italic text-slate-600">Esperando contenido</p>
+                <p class="text-xs italic text-slate-500 mt-2 max-w-xs">Define los hechos para construir la narrativa de hoy.</p>
             </div>
         </div>
 
         <!-- Estado Cargando -->
         <div id="state-loading" class="h-full flex flex-col items-center justify-center hidden">
-            <div class="w-16 h-1 bg-red-600 pulse-fast mb-8"></div>
-            <p class="text-4xl font-display font-black uppercase italic tracking-tighter animate-bounce text-zinc-900">Architecting News...</p>
+            <div class="w-16 h-1 bg-yellow-500 pulse-fast mb-8"></div>
+            <p class="text-4xl font-display font-black uppercase italic tracking-tighter animate-bounce text-slate-200">Architecting News...</p>
         </div>
 
         <!-- Estado Resultado -->
         <div id="state-result" class="hidden flex-col h-full space-y-8 fade-in">
             <!-- Header -->
-            <div class="border-b-2 border-zinc-900 pb-6">
+            <div class="border-b border-slate-800 pb-6">
                 <div class="flex flex-col md:flex-row md:items-end justify-between font-display gap-4 mb-4">
                     <div class="flex items-center gap-2">
-                        <span id="out-category" class="bg-red-600 text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
-                            Editorial Quindío
+                        <span id="out-category" class="bg-yellow-500 text-slate-900 px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                            Noticia
                         </span>
-                        <span class="text-[10px] font-black uppercase tracking-widest opacity-40" id="out-date"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500" id="out-date"></span>
                     </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest opacity-40">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">
                         Marca: Sentido Vial
                     </span>
                 </div>
-                <h2 id="out-headline" class="text-5xl md:text-7xl font-display font-black uppercase leading-[0.85] tracking-tighter text-zinc-900"></h2>
+                <h2 id="out-headline" class="text-5xl md:text-7xl font-display font-black uppercase leading-[0.85] tracking-tighter text-slate-100"></h2>
             </div>
 
             <!-- Grid Content -->
             <div class="grid lg:grid-cols-3 gap-12 flex-1 min-h-0 pb-20">
                 <!-- Visual Area -->
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="relative group aspect-[4/3] bg-zinc-200 overflow-hidden shadow-2xl border border-zinc-200">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                    <div class="relative group aspect-[16/9] bg-slate-900 overflow-hidden shadow-2xl border border-slate-800 rounded-lg">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent z-10"></div>
                         <img id="out-image" src="" alt="News Visual" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                         <div class="absolute bottom-6 left-6 z-20 text-white">
-                            <p class="text-[40px] font-display font-black italic tracking-tighter leading-none">SENTIDO VIAL</p>
-                            <p class="text-[9px] uppercase tracking-widest opacity-80 mt-1">Medio de Comunicación Quindiano</p>
-                        </div>
-                        <div class="absolute top-4 left-4 z-20 flex gap-2">
-                            <div class="bg-white/90 backdrop-blur px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black">
-                                AI Content
-                            </div>
+                            <p class="text-[40px] font-display font-black italic tracking-tighter leading-none text-slate-100">SENTIDO VIAL</p>
+                            <p class="text-[9px] uppercase tracking-widest text-slate-400 mt-1">Medio de Comunicación Quindiano</p>
                         </div>
                     </div>
                     
-                    <div class="border-l-4 border-red-600 pl-6 py-2">
-                        <p id="out-lead" class="text-xl md:text-2xl font-serif italic text-zinc-700 leading-relaxed"></p>
+                    <div class="border-l-4 border-yellow-500 pl-6 py-2 bg-slate-900/50 rounded-r-lg">
+                        <p id="out-lead" class="text-xl md:text-2xl font-serif italic text-slate-300 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Development/Content -->
+                    <div class="space-y-4 pt-4">
+                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Desarrollo</h3>
+                        <div id="out-body" class="prose prose-invert prose-zinc prose-sm leading-relaxed text-slate-300 font-sans max-w-none"></div>
                     </div>
                 </div>
 
-                <!-- Meta & Hashtags -->
+                <!-- Meta & Hashtags & Ads -->
                 <div class="flex flex-col py-2">
                     <div class="space-y-8 flex-1">
-                        <div class="space-y-4">
-                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Desarrollo</h3>
-                            <div id="out-body" class="prose prose-zinc prose-sm leading-relaxed text-zinc-800 font-sans"></div>
+                        
+                        <!-- AD SPACE -->
+                        <div class="border border-slate-800 bg-slate-900/50 rounded-lg p-6 flex flex-col items-center justify-center min-h-[300px] text-center">
+                            <i class="fas fa-ad text-3xl text-slate-700 mb-2"></i>
+                            <span class="text-slate-500 text-xs font-mono uppercase tracking-widest">Espacio Publicitario</span>
+                            <p class="text-[10px] text-slate-600 mt-2">Banner 300x250</p>
                         </div>
 
-                        <div class="space-y-4 pt-8 border-t border-zinc-300">
-                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-red-600">Smart Hashtags</h3>
+                        <div class="space-y-4 pt-8 border-t border-slate-800">
+                            <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-yellow-500">Smart Hashtags</h3>
                             <div id="out-hashtags" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
 
                     <div class="mt-8">
-                        <div class="bg-zinc-900 p-6 flex flex-col gap-4 shadow-xl">
+                        <div class="bg-slate-900 p-6 flex flex-col gap-4 shadow-xl rounded-lg border border-slate-800">
                             <div class="flex justify-between items-center text-white">
                                 <div class="space-y-0.5">
-                                    <p class="text-[8px] uppercase tracking-widest opacity-40">Publicación Oficial</p>
-                                    <p class="text-xs font-black uppercase tracking-tighter">Portal Sentido Vial</p>
+                                    <p class="text-[8px] uppercase tracking-widest text-slate-500">Publicación Oficial</p>
+                                    <p class="text-xs font-black uppercase tracking-tighter text-slate-300">Portal Sentido Vial</p>
                                 </div>
                                 <div class="flex gap-1.5">
-                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
-                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
-                                    <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
                                 </div>
                             </div>
-                            <button id="btn-publish" onclick="publishNews()" class="w-full py-3 text-[10px] font-black uppercase tracking-widest transition-all bg-white text-black hover:bg-zinc-200">
+                            <button id="btn-publish" onclick="publishNews()" class="w-full py-3 text-[10px] font-black uppercase tracking-widest transition-all bg-yellow-500 text-slate-900 hover:bg-yellow-400 rounded">
                                 PUBLICAR EN EL PORTAL
                             </button>
                         </div>
@@ -308,7 +312,7 @@
             if (data.hashtags && Array.isArray(data.hashtags)) {
                 data.hashtags.forEach(tag => {
                     const cleanTag = tag.startsWith('#') ? tag : '#' + tag;
-                    tagsContainer.innerHTML += `<span class="bg-zinc-900 text-white font-mono text-[9px] px-2 py-1.5 uppercase hover:bg-red-600 transition-colors cursor-default">${cleanTag}</span>`;
+                    tagsContainer.innerHTML += `<span class="bg-slate-900 border border-slate-700 text-slate-300 font-mono text-[9px] px-2 py-1.5 uppercase hover:border-yellow-500 hover:text-yellow-400 transition-colors cursor-default rounded">${cleanTag}</span>`;
                 });
             }
             
