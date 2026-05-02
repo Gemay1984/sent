@@ -10,7 +10,7 @@ define('DB_USER', 'tu_usuario_bd');     // Usuario creado en hPanel → MySQL
 define('DB_PASS', 'tu_contrasena_bd');  // Contraseña de la BD
 
 // ── Gemini AI (guardada SOLO en el servidor, nunca en frontend) ──
-define('GEMINI_API_KEY', 'AIzaSyAoG5DH0h8ufXKt6nTzmX14fqQM0e6R8u8');
+define('GEMINI_API_KEY', 'TU_NUEVA_CLAVE_GEMINI_AQUI');
 define('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent');
 
 // ── Conectar a MySQL y Autoinstalar Tablas ───────────────────────

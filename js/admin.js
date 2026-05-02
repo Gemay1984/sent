@@ -144,7 +144,7 @@ const admin = {
 
         try {
             // 2️⃣ Fallback: llamada directa a Gemini desde el navegador
-            const GEMINI_KEY = 'AIzaSyAoG5DH0h8ufXKt6nTzmX14fqQM0e6R8u8';
+            const GEMINI_KEY = 'TU_NUEVA_CLAVE_GEMINI_AQUI';
             const MODELOS = [
                 'gemini-3.1-flash',
                 'gemini-3.0-flash',
