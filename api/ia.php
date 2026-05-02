@@ -26,20 +26,48 @@ if (!$prompt) {
 }
 
 // ── Construir el prompt según la acción solicitada ────────────────
-$systemContext = "Eres el redactor jefe del portal de movilidad 'Sentido Vial Quindío', especializado en tránsito, seguridad vial, decreto SETTA, pico y placa, fotomultas, Código Nacional de Tránsito (Colombia) y vías del Eje Cafetero (Armenia, Calarcá, La Tebaida, Montenegro, Quimbaya). Redactas en español colombiano formal y periodístico.";
+$systemContext = "Eres un publicista y periodista experto del Quindío, Colombia. Tu marca principal es Sentido Vial Quindío (o RECREA). Genera contenido impactante, profesional y listo para redes sociales y la web.";
+
+$schema = null;
 
 switch ($accion) {
     case 'noticia':
-        $instruccion = "$systemContext\n\nRedacta una noticia completa sobre: \"$prompt\"\n\nDevuelve EXACTAMENTE este JSON (sin markdown):\n{\"titulo\": \"...\", \"extracto\": \"máximo 2 líneas\", \"contenido\": \"HTML con <p> tags\", \"categoria\": \"SETTA|Movilidad|Nacional|Judicial\"}";
+        $instruccion = "$systemContext\n\nRedacta una noticia completa sobre: \"$prompt\"\n\nIncluye un titular periodístico llamativo, un párrafo introductorio fuerte (extracto), el cuerpo detallado de la noticia (contenido en HTML con etiquetas <p>) y recomendaciones de hashtags virales de la región.";
+        $schema = [
+            'type' => 'OBJECT',
+            'properties' => [
+                'titulo'    => ['type' => 'STRING', 'description' => 'Titular llamativo y periodístico'],
+                'extracto'  => ['type' => 'STRING', 'description' => 'Un párrafo introductorio fuerte'],
+                'contenido' => ['type' => 'STRING', 'description' => 'El cuerpo de la noticia detallado en HTML'],
+                'categoria' => ['type' => 'STRING', 'description' => 'SETTA, Movilidad, Nacional, Judicial, Turismo o Cultura'],
+                'hashtags'  => ['type' => 'ARRAY', 'items' => ['type' => 'STRING'], 'description' => 'Hashtags recomendados (incluye #Quindio, #SentidoVial)']
+            ],
+            'required' => ['titulo', 'extracto', 'contenido', 'categoria', 'hashtags']
+        ];
         break;
     case 'mejora':
-        $instruccion = "$systemContext\n\nMejora este texto periodísticamente: \"$prompt\"\n\nDevuelve EXACTAMENTE este JSON:\n{\"contenido\": \"HTML mejorado con <p> tags\"}";
+        $instruccion = "$systemContext\n\nMejora este texto periodísticamente: \"$prompt\"";
+        $schema = [
+            'type' => 'OBJECT',
+            'properties' => ['contenido' => ['type' => 'STRING', 'description' => 'Texto mejorado en HTML']],
+            'required' => ['contenido']
+        ];
         break;
     case 'extracto':
-        $instruccion = "$systemContext\n\nGenera un extracto de máximo 2 líneas para: \"$prompt\"\n\nDevuelve EXACTAMENTE este JSON:\n{\"extracto\": \"...\"}";
+        $instruccion = "$systemContext\n\nGenera un extracto de máximo 2 líneas para: \"$prompt\"";
+        $schema = [
+            'type' => 'OBJECT',
+            'properties' => ['extracto' => ['type' => 'STRING']],
+            'required' => ['extracto']
+        ];
         break;
     case 'clasificado':
-        $instruccion = "$systemContext\n\nRedacta una descripción atractiva para este anuncio de vehículo: \"$prompt\"\n\nDevuelve EXACTAMENTE este JSON:\n{\"descripcion\": \"...\"}";
+        $instruccion = "$systemContext\n\nRedacta una descripción atractiva para este vehículo: \"$prompt\"";
+        $schema = [
+            'type' => 'OBJECT',
+            'properties' => ['descripcion' => ['type' => 'STRING']],
+            'required' => ['descripcion']
+        ];
         break;
     default:
         $instruccion = "$systemContext\n\n$prompt";
@@ -104,9 +132,15 @@ foreach ($modelos as $modelo) {
             ]
         ];
     }
+    $genConfig = ['temperature' => 0.7, 'maxOutputTokens' => 2048];
+    if ($schema) {
+        $genConfig['responseMimeType'] = 'application/json';
+        $genConfig['responseSchema'] = $schema;
+    }
+    
     $payload = json_encode([
         'contents' => [['parts' => $parts]],
-        'generationConfig' => ['temperature' => 0.7, 'maxOutputTokens' => 2048]
+        'generationConfig' => $genConfig
     ]);
 
     $ch = curl_init($url);

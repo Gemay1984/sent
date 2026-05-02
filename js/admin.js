@@ -398,7 +398,16 @@ const admin = {
 
         if (datos.titulo)    document.getElementById('n-titulo').value    = datos.titulo;
         if (datos.extracto)  document.getElementById('n-extracto').value  = datos.extracto;
-        if (datos.contenido) document.getElementById('n-contenido').value = datos.contenido;
+        
+        if (datos.contenido) {
+            let finalContent = datos.contenido;
+            if (datos.hashtags && Array.isArray(datos.hashtags) && datos.hashtags.length > 0) {
+                // Ensure hashtags have the # prefix
+                const tags = datos.hashtags.map(t => t.startsWith('#') ? t : '#' + t).join(' ');
+                finalContent += `\n\n<p style="color:var(--primary); font-weight:bold;">${tags}</p>`;
+            }
+            document.getElementById('n-contenido').value = finalContent;
+        }
         if (datos.categoria) {
             const sel = document.getElementById('n-categoria');
             if (sel) [...sel.options].forEach(o => { o.selected = (o.value === datos.categoria); });
