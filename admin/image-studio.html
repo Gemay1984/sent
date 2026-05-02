@@ -513,24 +513,27 @@ async function generarImagenIA() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando imagen...';
 
     try {
-        const GEMINI_KEY = 'TU_NUEVA_CLAVE_GEMINI_AQUI';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_KEY}`;
+        const url = '../api/ia.php';
         
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Admin-Token': localStorage.getItem('sv_admin_token') || '' 
+            },
             body: JSON.stringify({
-                instances: [ { prompt: prompt } ],
-                parameters: { sampleCount: 1, aspectRatio: "16:9" }
+                accion: 'imagen',
+                prompt: prompt,
+                aspectRatio: "16:9"
             })
         });
 
         const data = await res.json();
         
-        if (data.error) throw new Error(data.error.message);
+        if (!data.ok) throw new Error(data.error || 'Error desconocido');
         
-        if (data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
-            const b64img = data.predictions[0].bytesBase64Encoded;
+        if (data.data && data.data.base64) {
+            const b64img = data.data.base64;
             const img = new Image();
             img.onload = () => {
                 photoImg = img;

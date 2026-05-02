@@ -46,17 +46,41 @@ switch ($accion) {
 }
 
 // ── Llamada a Gemini API ──────────────────────────────────────────
-$payload = json_encode([
-    'contents' => [[
-        'parts' => [['text' => $instruccion]]
-    ]],
-    'generationConfig' => [
-        'temperature'     => 0.7,
-        'maxOutputTokens' => 2048,
-    ]
-]);
+$url = GEMINI_URL . '?key=' . GEMINI_API_KEY;
 
-$ch = curl_init(GEMINI_URL . '?key=' . GEMINI_API_KEY);
+if ($accion === 'imagen') {
+    $url = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=' . GEMINI_API_KEY;
+    $aspectRatio = $body['aspectRatio'] ?? '16:9';
+    $payload = json_encode([
+        'instances' => [['prompt' => $prompt]],
+        'parameters' => [
+            'sampleCount' => 1,
+            'aspectRatio' => $aspectRatio
+        ]
+    ]);
+} else {
+    $parts = [['text' => $instruccion]];
+    if (!empty($body['imagen_b64'])) {
+        $parts[] = [
+            'inline_data' => [
+                'mime_type' => 'image/jpeg', 
+                'data' => preg_replace('/^data:image\/\w+;base64,/', '', $body['imagen_b64'])
+            ]
+        ];
+    }
+    
+    $payload = json_encode([
+        'contents' => [[
+            'parts' => $parts
+        ]],
+        'generationConfig' => [
+            'temperature'     => 0.7,
+            'maxOutputTokens' => 2048,
+        ]
+    ]);
+}
+
+$ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -76,6 +100,17 @@ if ($httpCode !== 200) {
 }
 
 $geminiData = json_decode($response, true);
+
+if ($accion === 'imagen') {
+    $b64 = $geminiData['predictions'][0]['bytesBase64Encoded'] ?? null;
+    if ($b64) {
+        echo json_encode(['ok' => true, 'data' => ['base64' => $b64]]);
+    } else {
+        echo json_encode(['error' => 'No se generó la imagen.', 'detalle' => $response]);
+    }
+    exit;
+}
+
 $textRaw    = $geminiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
 
 // Intentar parsear el JSON que devuelve Gemini
