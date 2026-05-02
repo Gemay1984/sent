@@ -655,22 +655,40 @@ function check(btn, result){
     },
 
     async getSimulators() {
+        let dbSims = [];
         try {
             const res = await fetch('api/simuladores.php');
             if (!res.ok) throw new Error('API no disponible');
             const data = await res.json();
-            if (data.ok && data.data.length) {
+            if (data.ok && data.data && data.data.length > 0) {
                 // Normalizar campo embed_html → embedCode
-                return data.data.map(s => ({
-                    id: s.id, title: s.titulo, description: s.descripcion,
-                    icon: s.icono || 'fas fa-gamepad',
+                dbSims = data.data.map(s => ({
+                    id: s.id, 
+                    title: s.titulo || s.title, 
+                    description: s.descripcion || s.description,
+                    icon: s.icono || s.icon || 'fas fa-gamepad',
                     color: s.color || 'var(--accent-red)',
-                    embedCode: s.embed_html
+                    embedCode: s.embed_html || s.embedCode
                 }));
             }
-        } catch (_) { /* Fallback */ }
-        const stored = localStorage.getItem('sv_simulators');
-        return stored ? JSON.parse(stored) : this.defaultSimulators;
+        } catch (_) { 
+            // Fallback
+            const stored = localStorage.getItem('sv_simulators');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                dbSims = parsed.map(s => ({
+                    id: s.id, 
+                    title: s.titulo || s.title, 
+                    description: s.descripcion || s.description,
+                    icon: s.icono || s.icon || 'fas fa-gamepad',
+                    color: s.color || 'var(--accent-red)',
+                    embedCode: s.embed_html || s.embedCode
+                }));
+            }
+        }
+        
+        // Retornar los simuladores de la BD + los simuladores por defecto del sistema
+        return [...dbSims, ...this.defaultSimulators];
     },
 
     async getClasificados() {
