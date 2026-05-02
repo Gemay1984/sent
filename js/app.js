@@ -302,19 +302,35 @@ ${sim.embedCode}
         document.body.style.overflow = 'hidden';
     },
 
-    /* Modal de noticia completa */
+    /* Mostrar noticia completa (Estilo Premium Editorial) */
     openNewsById(id) {
         const n = window.SV.news.find(item => item.id === id);
         if (!n) return;
-        const content = `
-            <img src="${n.image}" alt="${n.title}"
-                 style="width:100%;height:250px;object-fit:cover;border-radius:0.5rem;margin-bottom:1.5rem;">
-            <span style="background:var(--primary);color:var(--bg-dark);font-size:0.7rem;font-weight:700;
-                         padding:0.2rem 0.7rem;border-radius:4px;text-transform:uppercase;">${n.category}</span>
-            <h2 class="font-serif" style="font-size:2rem;margin:1rem 0;">${n.title}</h2>
-            <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:1.5rem;">${n.date}</p>
-            <div style="line-height:1.8;font-size:1rem;">${n.content || n.excerpt}</div>`;
-        this.openModal(n.title, content);
+        
+        // Soportar tanto las llaves de la BD (español) como el fallback local (inglés)
+        const titulo = n.titulo || n.title;
+        const categoria = n.categoria || n.category || 'NOTICIA';
+        const fecha = n.fecha || n.date;
+        const imagen = n.imagen_url || n.image || 'https://picsum.photos/seed/sv/1200/675';
+        const extracto = n.extracto || n.excerpt || '';
+        const contenido = n.contenido || n.content || '';
+
+        // Formatear titular (cada 3ra palabra en rojo cursivo para estilo revista)
+        const words = titulo.split(' ');
+        const formattedHeadline = words.map((word, i) => 
+            (i % 3 === 1) ? `<span style="font-style: italic; color: #dc2626;">${word}</span>` : word
+        ).join(' ');
+
+        document.getElementById('pub-titulo').innerHTML = formattedHeadline;
+        document.getElementById('pub-categoria').innerText = categoria;
+        document.getElementById('pub-fecha').innerText = fecha;
+        document.getElementById('pub-imagen').src = imagen;
+        document.getElementById('pub-extracto').innerText = `"${extracto}"`;
+        document.getElementById('pub-contenido').innerHTML = contenido;
+
+        // Navegar a la vista de la noticia
+        router.navigate('noticia');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
     closeModal() {
