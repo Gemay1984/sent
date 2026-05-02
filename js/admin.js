@@ -130,96 +130,19 @@ const admin = {
             const proxyRes = await fetch('api/ia.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Admin-Token': this.token || '' },
-                body: JSON.stringify({ prompt, accion }),
-                signal: AbortSignal.timeout(5000) // 5s timeout para detectar si no hay servidor
+                body: JSON.stringify({ prompt, accion })
             });
-            if (proxyRes.ok) {
-                const data = await proxyRes.json();
+            const data = await proxyRes.json();
+            
+            if (proxyRes.ok && data.ok) {
                 if (btn) { btn.disabled = false; btn.innerHTML = '✨ Generar con IA'; }
                 return data.data || {};
+            } else {
+                throw new Error(data.error || 'Error desconocido de IA');
             }
-        } catch (_) {
-            // PHP no disponible → usar llamada directa (local / desarrollo)
-        }
-
-        try {
-            // 2️⃣ Fallback: llamada directa a Gemini desde el navegador
-            const GEMINI_KEY = 'TU_NUEVA_CLAVE_GEMINI_AQUI';
-            const MODELOS = [
-                'gemini-3.1-flash',
-                'gemini-3.0-flash',
-                'gemini-3.0-pro',
-                'gemini-2.5-flash',
-                'gemini-2.0-flash',
-                'gemini-1.5-flash'
-            ];
-
-            let rawText = '';
-            let ultimoError = '';
-
-            for (const modelo of MODELOS) {
-                try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_KEY}`;
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: instruccion }] }],
-                            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
-                        })
-                    });
-
-                    const gemData = await res.json();
-
-                    // Mostrar error real de la API si lo hay
-                    if (gemData.error) {
-                        ultimoError = gemData.error.message;
-                        console.warn(`Modelo ${modelo} falló:`, gemData.error.message);
-                        continue; // probar siguiente modelo
-                    }
-
-                    rawText = gemData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                    if (rawText) break; // éxito, salir del loop
-                } catch (modelErr) {
-                    ultimoError = modelErr.message;
-                    continue;
-                }
-            }
-
-            if (!rawText) {
-                alert(`⚠️ Gemini no respondió.\nError: ${ultimoError}\n\nVerifica que la API key sea válida en aistudio.google.com`);
-                return {};
-            }
-
-            // Parseo robusto del JSON devuelto por Gemini
-            const clean = rawText.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
-
-            // Intentar parsear directamente
-            try {
-                return JSON.parse(clean);
-            } catch (_) {
-                // Si no es JSON, extraer con regex o devolver el texto como contenido
-                const tituloMatch  = clean.match(/"titulo"\s*:\s*"([^"]+)"/);
-                const extractoMatch= clean.match(/"extracto"\s*:\s*"([^"]+)"/);
-                const contenidoMatch=clean.match(/"contenido"\s*:\s*"([\s\S]+?)(?=",\s*"(?:categoria|extracto)|})/);
-                const categoriaMatch=clean.match(/"categoria"\s*:\s*"([^"]+)"/);
-
-                if (tituloMatch) {
-                    return {
-                        titulo:    tituloMatch[1]    || '',
-                        extracto:  extractoMatch?.[1] || '',
-                        contenido: contenidoMatch?.[1]?.replace(/\\n/g,'\n').replace(/\\"/g,'"') || `<p>${clean}</p>`,
-                        categoria: categoriaMatch?.[1]|| 'Movilidad'
-                    };
-                }
-
-                // Último recurso: poner el texto crudo en el contenido
-                return { contenido: `<p>${rawText.replace(/\n/g,'</p><p>')}</p>` };
-            }
-
         } catch (err) {
-            console.error('Error Gemini directo:', err);
-            alert(`⚠️ Error de conexión con Gemini.\nDetalle: ${err.message}\n\nAsegúrate de tener Internet activo.`);
+            console.error('Error Gemini PHP proxy:', err);
+            alert(`⚠️ Error de conexión con la IA.\n\nAsegúrate de haber puesto tu nueva API Key en api/config.php dentro de Hostinger.\n\nDetalle: ${err.message}`);
             return {};
         } finally {
             if (btn) { btn.disabled = false; btn.innerHTML = '✨ Generar con IA'; }
