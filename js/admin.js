@@ -710,7 +710,7 @@ const admin = {
 
         lista.innerHTML = res.data.map(c => `
             <div class="glass p-4 mb-3" style="display:flex; gap:1rem; border-left:4px solid ${c.aprobado ? '#22c55e' : '#ef4444'};">
-                ${c.imagen_url ? `<img src="${c.imagen_url}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
+                ${c.imagen_url ? `<img src="${c.imagen_url.split(',')[0]}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
                 <div style="flex:1; min-width:0;">
                     <div style="display:flex;justify-content:space-between;">
                         <h5 style="margin:0;">${c.titulo} <span style="font-size:0.7rem; color:var(--text-muted);">(${c.tipo})</span></h5>

@@ -13,7 +13,7 @@ define('DB_PASS', 'tu_contrasena_bd');  // Contraseña de la BD
 define('GEMINI_API_KEY', 'AIzaSyAoG5DH0h8ufXKt6nTzmX14fqQM0e6R8u8');
 define('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent');
 
-// ── Conectar a MySQL ─────────────────────────────────────────────
+// ── Conectar a MySQL y Autoinstalar Tablas ───────────────────────
 function getDB(): PDO {
     static $pdo = null;
     if ($pdo === null) {
@@ -25,9 +25,22 @@ function getDB(): PDO {
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
             );
+            
+            // Auto-instalar tablas si no existen (Ej: primera ejecución en Hostinger)
+            $check = $pdo->query("SHOW TABLES LIKE 'noticias'");
+            if ($check->rowCount() === 0) {
+                $schemaFile = __DIR__ . '/schema.sql';
+                if (file_exists($schemaFile)) {
+                    $sql = file_get_contents($schemaFile);
+                    // Eliminar comandos CREATE DATABASE y USE para evitar errores de permisos
+                    $sql = preg_replace('/CREATE DATABASE.*?;/i', '', $sql);
+                    $sql = preg_replace('/USE .*?;/i', '', $sql);
+                    $pdo->exec($sql);
+                }
+            }
         } catch (PDOException $e) {
             http_response_code(500);
-            die(json_encode(['error' => 'Error de conexión a la base de datos']));
+            die(json_encode(['error' => 'Error de conexión a la base de datos MySQL. Revisa config.php.']));
         }
     }
     return $pdo;
