@@ -126,7 +126,6 @@ const admin = {
         const instruccion = instrucciones[accion] || prompt;
 
         try {
-            // 1️⃣ Intentar vía PHP proxy (producción en Hostinger)
             const proxyRes = await fetch('api/ia.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Admin-Token': this.token || '' },
@@ -136,7 +135,26 @@ const admin = {
             
             if (proxyRes.ok && data.ok) {
                 if (btn) { btn.disabled = false; btn.innerHTML = '✨ Generar con IA'; }
-                return data.data || {};
+                const resultado = data.data || {};
+                // Si Gemini devolvió el JSON como texto plano, parsearlo
+                if (!resultado.titulo && resultado.texto) {
+                    try {
+                        const clean = resultado.texto
+                            .replace(/```json/gi, '').replace(/```/gi, '').trim();
+                        const parsed = JSON.parse(clean);
+                        return parsed;
+                    } catch (_) {
+                        // Extraer campos con regex si no es JSON válido
+                        const t = resultado.texto;
+                        return {
+                            titulo:    (t.match(/"titulo"\s*:\s*"([^"]+)"/) || [])[1] || '',
+                            extracto:  (t.match(/"extracto"\s*:\s*"([^"]+)"/) || [])[1] || '',
+                            contenido: (t.match(/"contenido"\s*:\s*"([\s\S]+?)"\s*,?\s*"categoria"/) || [])[1]?.replace(/\\n/g,'\n').replace(/\\"/g,'"') || `<p>${t}</p>`,
+                            categoria: (t.match(/"categoria"\s*:\s*"([^"]+)"/) || [])[1] || 'Movilidad'
+                        };
+                    }
+                }
+                return resultado;
             } else {
                 throw new Error(data.error || 'Error desconocido de IA');
             }
@@ -334,15 +352,23 @@ const admin = {
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Imagen Principal (URL o Subir Archivo)</label>
-                    <div style="display:flex;gap:0.5rem;align-items:center;">
-                        <input id="n-imagen" type="url" class="form-control" value="${noticia?.imagen_url || ''}"
-                               placeholder="https://... o clic en Subir" style="flex:1;">
-                        <button type="button" class="btn btn-outline" style="white-space:nowrap;padding:0.4rem 1rem;"
+                    <label class="form-label">Imagen Principal (URL, Subir Archivo o Generar con IA)</label>
+                    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                        <input id="n-imagen" type="text" class="form-control" value="${noticia?.imagen_url || ''}"
+                               placeholder="https://... o usa los botones" style="flex:1;min-width:180px;">
+                        <button type="button" class="btn btn-outline" style="white-space:nowrap;padding:0.4rem 0.8rem;"
                                 onclick="document.getElementById('n-file').click()">
                             <i class="fas fa-upload"></i> Subir
                         </button>
+                        <button type="button" id="btn-gen-img-noticia" class="btn btn-outline"
+                                style="white-space:nowrap;padding:0.4rem 0.8rem;border-color:#7c3aed;color:#a78bfa;"
+                                onclick="admin.generarImagenNoticia()">
+                            <i class="fas fa-magic"></i> IA
+                        </button>
                         <input type="file" id="n-file" accept="image/*" style="display:none" onchange="admin.subirImagenNoticia(this)">
+                    </div>
+                    <div id="n-img-preview" style="margin-top:0.5rem;display:none;">
+                        <img id="n-img-preview-src" style="max-height:120px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);">
                     </div>
                 </div>
 
@@ -368,13 +394,58 @@ const admin = {
         if (!tema) { alert('Describe el tema de la noticia primero.'); return; }
 
         const datos = await this.llamarIA(tema, 'noticia');
+        if (!datos || Object.keys(datos).length === 0) return;
 
-        if (datos.titulo)     document.getElementById('n-titulo').value    = datos.titulo;
-        if (datos.extracto)   document.getElementById('n-extracto').value  = datos.extracto;
-        if (datos.contenido)  document.getElementById('n-contenido').value = datos.contenido;
+        if (datos.titulo)    document.getElementById('n-titulo').value    = datos.titulo;
+        if (datos.extracto)  document.getElementById('n-extracto').value  = datos.extracto;
+        if (datos.contenido) document.getElementById('n-contenido').value = datos.contenido;
         if (datos.categoria) {
             const sel = document.getElementById('n-categoria');
-            [...sel.options].forEach(o => { if (o.value === datos.categoria) o.selected = true; });
+            if (sel) [...sel.options].forEach(o => { o.selected = (o.value === datos.categoria); });
+        }
+        // Animar los campos llenados
+        ['n-titulo','n-extracto','n-contenido'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.style.borderColor = 'var(--primary)'; setTimeout(() => el.style.borderColor = '', 2000); }
+        });
+    },
+
+    async generarImagenNoticia() {
+        const tema = document.getElementById('ia-tema')?.value?.trim()
+                  || document.getElementById('n-titulo')?.value?.trim();
+        if (!tema) { alert('Primero describe el tema o escribe el título para que la IA sepa qué imagen crear.'); return; }
+
+        const btn = document.getElementById('btn-gen-img-noticia');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...'; }
+
+        try {
+            const promptImg = `Fotografía periodística profesional para una noticia sobre tránsito en Armenia, Quindío, Colombia: "${tema}". Estilo fotojornalismo, luz natural, alta calidad.`;
+            const res = await fetch('api/ia.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Token': this.token || '' },
+                body: JSON.stringify({ prompt: promptImg, accion: 'imagen', aspectRatio: '16:9' })
+            });
+            const data = await res.json();
+
+            if (data.ok && data.data?.base64) {
+                const src = 'data:image/jpeg;base64,' + data.data.base64;
+                // Mostrar preview
+                const preview = document.getElementById('n-img-preview');
+                const previewImg = document.getElementById('n-img-preview-src');
+                if (preview && previewImg) {
+                    previewImg.src = src;
+                    preview.style.display = 'block';
+                }
+                // Guardar la imagen como base64 en el campo
+                document.getElementById('n-imagen').value = src;
+                document.getElementById('n-imagen').dataset.base64 = src;
+            } else {
+                alert('No se pudo generar la imagen: ' + (data.error || 'Error desconocido'));
+            }
+        } catch(e) {
+            alert('Error generando imagen: ' + e.message);
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> IA'; }
         }
     },
 
@@ -391,12 +462,34 @@ const admin = {
         btn.disabled = true; btn.textContent = 'Guardando...';
         
         const idStr = document.getElementById('n-id').value;
+        let imagenUrl = document.getElementById('n-imagen').value;
+
+        // Si la imagen es un base64 generado por IA, subirla primero
+        if (imagenUrl && imagenUrl.startsWith('data:image')) {
+            try {
+                const blob = await (await fetch(imagenUrl)).blob();
+                const file = new File([blob], 'ia-generada.jpg', { type: 'image/jpeg' });
+                const fd = new FormData();
+                fd.append('image', file);
+                const upRes = await fetch('api/upload.php', {
+                    method: 'POST',
+                    headers: { 'X-Admin-Token': this.token || '' },
+                    body: fd
+                });
+                const upData = await upRes.json();
+                if (upData.url) imagenUrl = upData.url;
+            } catch(err) {
+                console.warn('No se pudo subir imagen IA, se guardará como base64 corto:', err);
+                imagenUrl = ''; // No guardar base64 gigante en la BD
+            }
+        }
+
         const bodyData = {
             titulo:    document.getElementById('n-titulo').value,
             extracto:  document.getElementById('n-extracto').value,
             contenido: document.getElementById('n-contenido').value,
             categoria: document.getElementById('n-categoria').value,
-            imagen_url:document.getElementById('n-imagen').value,
+            imagen_url: imagenUrl,
             fecha:     document.getElementById('n-fecha').value,
         };
         
