@@ -11,7 +11,7 @@ define('DB_PASS', 'tu_contrasena_bd');  // Contraseña de la BD
 
 // ── Gemini AI (guardada SOLO en el servidor, nunca en frontend) ──
 define('GEMINI_API_KEY', 'TU_NUEVA_CLAVE_GEMINI_AQUI');
-define('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent');
+define('GEMINI_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent');
 
 // ── Conectar a MySQL y Autoinstalar Tablas ───────────────────────
 function getDB(): PDO {
