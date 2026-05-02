@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sentido Vial - El portal lÃ­der en movilidad, noticias y seguridad vial en el QuindÃ­o y Armenia.">
-    <title>Sentido Vial | QuindÃ­o y Armenia</title>
+    <meta name="description" content="Sentido Vial - El portal líder en movilidad, noticias, trámites y seguridad vial en el Quindío y Armenia. Información oficial y actualizada.">
+    <title>Sentido Vial | Quindío y Armenia</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,9 +34,9 @@
                 <li><a href="javascript:void(0)" class="nav-link active" data-view="home" onclick="router.navigate('home')">Inicio</a></li>
                 <li><a href="javascript:void(0)" class="nav-link" data-view="noticias" onclick="router.navigate('noticias')">Noticias</a></li>
                 <li><a href="javascript:void(0)" class="nav-link" data-view="simuladores" onclick="router.navigate('simuladores')">Simuladores</a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-view="clasificados" onclick="router.navigate('clasificados')">Mercado</a></li>
-                <li><a href="javascript:void(0)" class="nav-link" data-view="asesoria" onclick="router.navigate('asesoria')">AsesorÃ­a</a></li>
-                <li><a href="javascript:void(0)" class="nav-link nav-admin" data-view="admin" onclick="router.navigate('admin')" title="Panel Admin"><i class="fas fa-user-shield"></i></a></li>
+                <li><a href="javascript:void(0)" class="nav-link" data-view="clasificados" onclick="router.navigate('clasificados')">Mercado Vial</a></li>
+                <li><a href="javascript:void(0)" class="nav-link" data-view="asesoria" onclick="router.navigate('asesoria')">Asesoría Jurídica</a></li>
+                <li><a href="javascript:void(0)" class="nav-link nav-admin" data-view="admin" onclick="router.navigate('admin')" title="Panel Administrativo"><i class="fas fa-user-shield"></i></a></li>
             </ul>
 
             <div class="mobile-menu-btn lg-hidden">
@@ -56,10 +56,10 @@
                 </div>
                 <div class="container">
                     <div class="hero-content animate-fade-in">
-                        <span class="hero-subtitle">MOVILIDAD QUINDÃO</span>
-                        <h1 class="hero-title">El latido de <br><span style="color: var(--primary); font-style: italic;">Armenia</span> en la vÃ­a.</h1>
+                        <span class="hero-subtitle">MOVILIDAD QUINDÍO Y EJE CAFETERO</span>
+                        <h1 class="hero-title">El latido de <br><span style="color: var(--primary); font-style: italic;">Armenia</span> en la vía.</h1>
                         <p class="hero-description">
-                            Actualidad de SETTA, reportes de trÃ¡fico en tiempo real, asesorÃ­a jurÃ­dica experta y los simuladores viales mÃ¡s avanzados del Eje Cafetero.
+                            La plataforma periodística más confiable sobre actualidad de SETTA, reportes de tráfico en tiempo real, decretos vigentes, asesoría jurídica especializada y los simuladores viales más avanzados de Colombia.
                         </p>
                         <div class="hero-actions" style="display: flex; gap: 1.5rem;">
                             <button class="btn btn-primary" onclick="router.navigate('noticias')">VER NOTICIAS</button>
@@ -75,7 +75,7 @@
                     <!-- Traffic Widget -->
                     <div class="glass p-6" style="min-height: 400px;">
                         <h3 class="font-serif mb-4" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>TrÃ¡nsito en Vivo</span>
+                            <span>Tránsito en Vivo</span>
                             <span style="font-size: 0.8rem; color: var(--accent-red); animation: pulse 2s infinite;"><i class="fas fa-circle"></i> EN VIVO</span>
                         </h3>
                         <div style="border-radius: 0.5rem; overflow: hidden; height: 300px;">
@@ -84,18 +84,18 @@
                     </div>
                     <!-- Pico y Placa Widget -->
                     <div class="glass p-6 text-center" style="border-top: 4px solid var(--primary);">
-                        <h3 class="font-serif mb-2">Pico y Placa Hoy</h3>
-                        <p id="current-date" style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 1.5rem;">Cargando...</p>
-                        <div style="background: rgba(2, 6, 23, 0.5); padding: 1.5rem; border-radius: 1rem; margin-bottom: 1rem;">
+                        <h3 class="font-serif mb-2">Pico y Placa Armenia</h3>
+                        <p id="current-date" style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 1.5rem;">Cargando fecha...</p>
+                        <div style="background: rgba(2, 6, 23, 0.5); padding: 1.5rem; border-radius: 1rem; margin-bottom: 1rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
                             <p id="pyp-day" style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; font-size: 0.9rem; min-height: 1.5rem;">—</p>
-                            <p id="pyp-numbers" style="font-size: 4rem; font-weight: 900; font-family: var(--font-title); line-height: 1;">—</p>
+                            <p id="pyp-numbers" style="font-size: 4.5rem; font-weight: 900; font-family: var(--font-title); line-height: 1;">—</p>
                         </div>
-                        <p id="pyp-nota" style="font-size: 0.75rem; color: var(--text-muted);">
-                            Aplica en el Centro de Armenia de <br><span style="color: var(--primary);">7:00 AM a 7:00 PM</span>
+                        <p id="pyp-nota" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Aplica en todo el cuadrante céntrico de la ciudad, desde las <span style="color: var(--primary); font-weight: 600;">7:00 AM hasta las 7:00 PM</span>.
                         </p>
-                        <div style="margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--glass-border); font-size: 0.7rem; color: var(--text-muted);">
+                        <div style="padding-top: 1rem; border-top: 1px solid var(--glass-border); font-size: 0.75rem; color: var(--text-muted);">
                             <i class="fas fa-info-circle" style="color: var(--primary);"></i>
-                            Los festivos nacionales <strong>no aplica</strong> restricción
+                            <strong>Nota Oficial:</strong> Durante los días festivos nacionales, la medida restrictiva de movilidad no aplica.
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,7 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Actualidad <span style="color: var(--primary); font-style: italic;">Quindiana</span></h2>
-                    <p style="color: var(--text-muted);">Ãšltimas noticias sobre movilidad, decretos y eventos viales en la regiÃ³n.</p>
+                    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Periodismo investigativo sobre los últimos sucesos viales, normativas, y proyectos de infraestructura vial que impactan la región.</p>
                 </div>
                 
                 <div id="news-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
@@ -121,7 +121,7 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Entrenamiento <span style="color: var(--primary); font-style: italic;">Virtual</span></h2>
-                    <p style="color: var(--text-muted);">Pon a prueba tus conocimientos y reflejos antes de salir a la vÃ­a. Contenido dinÃ¡mico.</p>
+                    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Simulacros interactivos oficiales. Prepárate para tus exámenes teóricos de conducción, conoce la normativa y evita accidentes.</p>
                 </div>
                 
                 <div id="simulators-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem;">
@@ -135,18 +135,18 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Mercado <span style="color: var(--primary); font-style: italic;">Vial</span></h2>
-                    <p style="color: var(--text-muted);">Compra y venta de vehÃ­culos en el QuindÃ­o. El vitrina mÃ¡s exclusiva de Armenia.</p>
+                    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">La vitrina automotriz más segura y exclusiva del Quindío. Compra y vende vehículos con total confianza.</p>
                 </div>
                 
                 <div class="glass mb-12 overflow-hidden flex-col-mobile" style="display: flex; min-height: 400px;">
                     <div style="flex: 1; padding: 4rem;">
-                        <span class="hero-subtitle">DESTACADO DEL MES</span>
-                        <h2 class="font-serif mb-4" style="font-size: 2.5rem;">Vende tu vehículo <br>con nosotros</h2>
-                        <p class="mb-8" style="color: var(--text-muted);">Publicidad dirigida a conductores y aficionados del motor en todo el Eje Cafetero. Alcance garantizado.</p>
-                        <button class="btn btn-primary" onclick="ui.openPublicarAnuncio()">PUBLICAR ANUNCIO</button>
+                        <span class="hero-subtitle">MERCADO PROFESIONAL</span>
+                        <h2 class="font-serif mb-4" style="font-size: 2.5rem;">Conecta con el <br>comprador ideal</h2>
+                        <p class="mb-8" style="color: var(--text-muted);">Aprovecha nuestra audiencia de miles de conductores diarios en la región para vender tu carro, moto o encontrar repuestos especializados con alcance garantizado.</p>
+                        <button class="btn btn-primary" onclick="ui.openPublicarAnuncio()"><i class="fas fa-camera"></i> PUBLICAR ANUNCIO GRATIS</button>
                     </div>
                     <div style="flex: 1;" class="hidden-mobile">
-                        <img src="quindio_luxury_car_classifieds_1777690353634.png" alt="Car Classifieds" style="width:100%; height:100%; object-fit:cover;">
+                        <img src="quindio_luxury_car_classifieds_1777690353634.png" alt="Mercado de vehículos Quindío" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                 </div>
 
@@ -159,63 +159,77 @@
 
         <!-- SECTION: ASESORÍA -->
         <section id="view-asesoria">
-            <div class="container" style="max-width: 900px;">
+            <div class="container" style="max-width: 1000px;">
                 <div class="section-header">
-                    <h2 class="section-title">Defensa <span style="color: var(--primary); font-style: italic;">TÃ©cnica</span></h2>
-                    <p style="color: var(--text-muted);">Expertos en impugnaciÃ³n de fotomultas, embargos y accidentes de trÃ¡nsito.</p>
+                    <h2 class="section-title">Defensa <span style="color: var(--primary); font-style: italic;">Técnica Especializada</span></h2>
+                    <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">Nuestro bufete de abogados de tránsito es experto en la impugnación de fotomultas ilegales, levantamiento de embargos y defensa en accidentes.</p>
                 </div>
                 
-                <div class="glass p-10" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem;">
+                <div class="glass p-10" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem;">
                     <div class="hidden-mobile">
-                        <h3 class="mb-6">Â¿Por quÃ© elegirnos?</h3>
+                        <h3 class="mb-6 font-serif" style="font-size: 1.8rem;">¿Por qué confiar en nosotros?</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Protegemos su patrimonio y su licencia de conducción aplicando de manera rigurosa las sentencias constitucionales vigentes, garantizando el debido proceso procesal.</p>
+                        
                         <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.5rem;">
-                            <li style="display: flex; gap: 1rem;">
-                                <i class="fas fa-check-circle" style="color: var(--primary);"></i>
-                                <span>AnÃ¡lisis gratuito de su comparendo.</span>
+                            <li style="display: flex; gap: 1rem; align-items: flex-start;">
+                                <i class="fas fa-balance-scale" style="color: var(--primary); font-size: 1.5rem; margin-top: 0.2rem;"></i>
+                                <div>
+                                    <h4 style="margin: 0 0 0.2rem 0;">Estudio de Viabilidad Gratuito</h4>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Revisamos su caso en el SIMIT sin ningún costo inicial para determinar la probabilidad de éxito.</p>
+                                </div>
                             </li>
-                            <li style="display: flex; gap: 1rem;">
-                                <i class="fas fa-check-circle" style="color: var(--primary);"></i>
-                                <span>Basado en Sentencia C-038 de 2020.</span>
+                            <li style="display: flex; gap: 1rem; align-items: flex-start;">
+                                <i class="fas fa-gavel" style="color: var(--primary); font-size: 1.5rem; margin-top: 0.2rem;"></i>
+                                <div>
+                                    <h4 style="margin: 0 0 0.2rem 0;">Aplicación Sentencia C-038 de 2020</h4>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Las fotomultas deben identificar plenamente al conductor infractor, no solo al propietario del vehículo.</p>
+                                </div>
                             </li>
-                            <li style="display: flex; gap: 1rem;">
-                                <i class="fas fa-check-circle" style="color: var(--primary);"></i>
-                                <span>Sin pagos anticipados en casos de embargo.</span>
+                            <li style="display: flex; gap: 1rem; align-items: flex-start;">
+                                <i class="fas fa-shield-alt" style="color: var(--primary); font-size: 1.5rem; margin-top: 0.2rem;"></i>
+                                <div>
+                                    <h4 style="margin: 0 0 0.2rem 0;">Defensa Contra Embargos</h4>
+                                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Actuamos rápidamente para levantar medidas cautelares sobre sus cuentas bancarias y bienes.</p>
+                                </div>
                             </li>
                         </ul>
                     </div>
-                    <form id="form-asesoria">
+                    
+                    <form id="form-asesoria" style="background: rgba(15, 23, 42, 0.4); padding: 2rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05);">
+                        <h4 class="mb-6" style="text-align: center; color: var(--text-light);">Formulario de Contacto Jurídico</h4>
                         <div class="form-group">
                             <label class="form-label">Nombre Completo *</label>
-                            <input type="text" class="form-control" placeholder="Juan PÃ©rez" required>
+                            <input type="text" class="form-control" placeholder="Ej: Juan Pérez" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">WhatsApp *</label>
-                            <input type="tel" class="form-control" placeholder="300 000 0000" required>
+                            <label class="form-label">Número de WhatsApp *</label>
+                            <input type="tel" class="form-control" placeholder="Ej: 300 000 0000" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Entidad de TrÃ¡nsito</label>
+                            <label class="form-label">Entidad Reguladora de Tránsito</label>
                             <select class="form-control">
-                                <option value="setta">SETTA (Armenia)</option>
-                                <option value="idteq">IDTEQ (QuindÃ­o)</option>
-                                <option value="calarca">TrÃ¡nsito CalarcÃ¡</option>
-                                <option value="nacional">Nacional (POLTRA)</option>
+                                <option value="setta">SETTA (Secretaría de Tránsito Armenia)</option>
+                                <option value="idteq">IDTEQ (Instituto Dptal. Quindío)</option>
+                                <option value="calarca">Subsecretaría de Tránsito de Calarcá</option>
+                                <option value="nacional">Tránsito Nacional (POLTRA/SIMIT)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Tipo de Proceso</label>
+                            <label class="form-label">Tipo de Procedimiento</label>
                             <select class="form-control">
-                                <option>Fotomulta / CÃ¡mara</option>
-                                <option>Embargo de Cuenta</option>
-                                <option>Accidente (IPAT)</option>
-                                <option>Alcoholemia</option>
-                                <option>Otro Comparendo</option>
+                                <option>Fotomulta / Detección Electrónica</option>
+                                <option>Embargo de Cuenta Bancaria / Vehículo</option>
+                                <option>Accidente de Tránsito (Informe IPAT)</option>
+                                <option>Comparendo por Alcoholemia</option>
+                                <option>Suspensión de Licencia</option>
+                                <option>Otro Tipo de Comparendo</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">DescripciÃ³n del Caso *</label>
-                            <textarea class="form-control" rows="3" placeholder="Describa brevemente su situaciÃ³n..." required style="resize:none;"></textarea>
+                            <label class="form-label">Descripción Detallada del Caso *</label>
+                            <textarea class="form-control" rows="4" placeholder="Describa los detalles de su infracción, si tiene las fechas o el número de comparendo, por favor inclúyalos aquí..." required style="resize:none;"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary w-full">SOLICITAR ANÃLISIS GRATUITO</button>
+                        <button type="submit" class="btn btn-primary w-full"><i class="fab fa-whatsapp"></i> ENVIAR CASO POR WHATSAPP</button>
                     </form>
                 </div>
             </div>
@@ -224,26 +238,27 @@
         <!-- SECTION: ADMIN (Login & Panel) -->
         <section id="view-admin">
             <div class="container" style="max-width: 1100px;">
-                <div id="admin-login-view" class="glass p-10">
+                <div id="admin-login-view" class="glass p-10 mx-auto" style="max-width: 500px;">
                     <div class="text-center mb-10">
-                        <i class="fas fa-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
-                        <h2 class="font-serif">Acceso Administrativo</h2>
+                        <i class="fas fa-shield-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h2 class="font-serif">Centro de Control</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Acceso exclusivo para personal autorizado.</p>
                     </div>
                     <form id="login-form">
                         <div class="form-group">
-                            <label class="form-label">Usuario</label>
-                            <input type="text" id="admin-user" class="form-control" placeholder="admin">
+                            <label class="form-label">Usuario / Correo</label>
+                            <input type="text" id="admin-user" class="form-control" placeholder="admin@sentidovial.com">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">ContraseÃ±a</label>
-                            <input type="password" id="admin-pass" class="form-control" placeholder="****">
+                            <label class="form-label">Contraseña de Acceso</label>
+                            <input type="password" id="admin-pass" class="form-control" placeholder="••••••••">
                         </div>
-                        <button type="submit" class="btn btn-primary w-full">INGRESAR AL PANEL</button>
+                        <button type="submit" class="btn btn-primary w-full"><i class="fas fa-sign-in-alt"></i> INGRESAR AL SISTEMA</button>
                     </form>
                 </div>
 
                 <div id="admin-dashboard-view" class="hidden" style="max-width: 1200px; width: 100%;">
-                    <!-- Admin content here -->
+                    <!-- Admin content injected dynamically -->
                 </div>
             </div>
         </section>
@@ -252,7 +267,7 @@
         <div id="global-modal" class="modal-overlay">
             <div class="modal-container glass">
                 <div class="modal-header">
-                    <h3 id="modal-title" class="font-serif" style="font-size: 1.5rem; color: var(--primary);">TÃ­tulo</h3>
+                    <h3 id="modal-title" class="font-serif" style="font-size: 1.5rem; color: var(--primary);">Título</h3>
                     <button class="modal-close" onclick="ui.closeModal()"><i class="fas fa-times"></i></button>
                 </div>
                 <div id="modal-body" class="modal-body">
@@ -263,34 +278,36 @@
 
     </main>
 
-    <footer style="padding: 100px 0 50px; background: #010409; border-top: 1px solid var(--glass-border);">
+    <footer style="padding: 80px 0 30px; background: #020617; border-top: 1px solid rgba(250, 194, 19, 0.2);">
         <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4rem; margin-bottom: 50px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4rem; margin-bottom: 50px;">
                 <div>
-                    <img src="sentido_vial_logo_premium_1777690282807.png" alt="Logo" style="height: 40px; margin-bottom: 1.5rem; opacity: 0.8;">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">
-                        El portal lÃ­der en seguridad vial, noticias y servicios jurÃ­dicos para el departamento del QuindÃ­o y el Eje Cafetero.
+                    <img src="sentido_vial_logo_premium_1777690282807.png" alt="Sentido Vial Logo" style="height: 45px; margin-bottom: 1.5rem;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        El medio de comunicación líder especializado en cultura ciudadana, movilidad, noticias de tránsito y representación jurídica integral para todo el departamento del Quindío y el Eje Cafetero.
                     </p>
                 </div>
                 <div>
-                    <h4 class="mb-4" style="color: var(--primary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Enlaces</h4>
+                    <h4 class="mb-4" style="color: var(--primary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Marco Legal e Información</h4>
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem; font-size: 0.85rem; color: var(--text-muted);">
-                        <li><a href="javascript:void(0)" onclick="ui.openPrivacidad()" style="color: inherit; text-decoration: none;">Privacidad</a></li>
-                        <li><a href="javascript:void(0)" onclick="ui.openTerminos()" style="color: inherit; text-decoration: none;">TÃ©rminos y Condiciones</a></li>
-                        <li><a href="javascript:void(0)" onclick="router.navigate('asesoria')" style="color: inherit; text-decoration: none;">Contacto JurÃ­dico</a></li>
+                        <li><a href="javascript:void(0)" onclick="ui.openPrivacidad()" style="color: inherit; text-decoration: none; transition: color 0.3s;"><i class="fas fa-shield-alt" style="margin-right: 0.5rem; color: var(--primary);"></i> Política de Privacidad</a></li>
+                        <li><a href="javascript:void(0)" onclick="ui.openTerminos()" style="color: inherit; text-decoration: none; transition: color 0.3s;"><i class="fas fa-file-contract" style="margin-right: 0.5rem; color: var(--primary);"></i> Términos y Condiciones</a></li>
+                        <li><a href="javascript:void(0)" onclick="router.navigate('asesoria')" style="color: inherit; text-decoration: none; transition: color 0.3s;"><i class="fas fa-balance-scale" style="margin-right: 0.5rem; color: var(--primary);"></i> Consulta Jurídica Gratuita</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="mb-4" style="color: var(--primary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Redes Sociales</h4>
+                    <h4 class="mb-4" style="color: var(--primary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">Nuestras Redes Sociales</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Síganos para mantenerse informado de los reportes viales en tiempo real.</p>
                     <div style="display: flex; gap: 1rem;">
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 40px; height: 40px; border-radius: 50%;"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 40px; height: 40px; border-radius: 50%;"><i class="fab fa-instagram"></i></a>
-                        <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 40px; height: 40px; border-radius: 50%;"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 45px; height: 45px; border-radius: 50%; border-color: rgba(255,255,255,0.1);"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 45px; height: 45px; border-radius: 50%; border-color: rgba(255,255,255,0.1);"><i class="fab fa-instagram"></i></a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem; width: 45px; height: 45px; border-radius: 50%; border-color: rgba(255,255,255,0.1);"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
             </div>
-            <div style="text-align: center; color: #475569; font-size: 0.75rem; border-top: 1px solid #1e293b; padding-top: 2rem;">
-                &copy; 2026 Sentido Vial QuindÃ­o. Todos los derechos reservados.
+            <div style="text-align: center; color: #475569; font-size: 0.8rem; border-top: 1px solid #1e293b; padding-top: 2rem;">
+                &copy; <script>document.write(new Date().getFullYear())</script> <strong>Sentido Vial Quindío</strong>. Todos los derechos reservados.<br>
+                <span style="font-size: 0.7rem; opacity: 0.7;">Desarrollado y potenciado con Inteligencia Artificial.</span>
             </div>
         </div>
     </footer>
