@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sala de Redacción | Sentido Vial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary: #fac213;
+  --primary-dim: rgba(250,194,19,0.15);
+  --primary-border: rgba(250,194,19,0.35);
+  --bg: #020617;
+  --bg2: #0f172a;
+  --bg3: #1e293b;
+  --card: rgba(15,23,42,0.85);
+  --border: rgba(255,255,255,0.07);
+  --text: #f8fafc;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --success: #22c55e;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --blur: blur(16px);
+  --font: 'Montserrat', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:10px}
+
+/* ── Login overlay ── */
+#login-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:radial-gradient(ellipse at 30% 50%, rgba(250,194,19,0.08) 0%, transparent 60%),
+             linear-gradient(135deg,#020617 0%,#0f172a 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-card{
+  background:var(--card);backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:20px;
+  padding:3rem;width:100%;max-width:420px;text-align:center;
+}
+.login-card .logo-mark{font-size:3rem;color:var(--primary);margin-bottom:1rem}
+.login-card h1{font-family:var(--font-serif);font-size:1.8rem;margin-bottom:.5rem}
+.login-card p{color:var(--muted2);font-size:.85rem;margin-bottom:2rem}
+.login-card input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:.9rem 1.1rem;color:var(--text);
+  font-family:var(--font);font-size:.9rem;margin-bottom:1rem;
+  transition:border-color .2s;
+}
+.login-card input:focus{outline:none;border-color:var(--primary-border)}
+.btn-login{
+  width:100%;background:var(--primary);color:#000;font-weight:700;
+  border:none;border-radius:var(--radius-sm);padding:1rem;
+  font-family:var(--font);font-size:.95rem;cursor:pointer;
+  transition:opacity .2s,transform .1s;
+}
+.btn-login:hover{opacity:.9}
+.btn-login:active{transform:scale(.98)}
+#login-error{color:var(--error);font-size:.8rem;margin-top:.5rem;display:none}
+
+/* ── App shell ── */
+#app{display:flex;flex-direction:column;height:100%;overflow:hidden}
+
+/* ── Top bar ── */
+.topbar{
+  display:flex;align-items:center;gap:1rem;
+  padding:.65rem 1.5rem;
+  background:rgba(2,6,23,0.98);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;position:relative;
+}
+.topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(250,194,19,.4) 30%,rgba(250,194,19,.4) 70%,transparent 100%);
+}
+.topbar-brand{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.topbar-brand .brand-logo{height:34px;width:auto;object-fit:contain;filter:drop-shadow(0 0 6px rgba(250,194,19,.3))}
+.topbar-brand .brand-name{font-weight:800;font-size:.9rem;line-height:1.2;letter-spacing:-.01em}
+.topbar-brand .brand-sub{font-size:.68rem;color:var(--muted);font-weight:500;letter-spacing:.02em}
+
+.topbar-steps{flex:1;display:flex;align-items:center;justify-content:center;gap:0}
+.step-item{
+  display:flex;align-items:center;gap:.45rem;
+  padding:.35rem .75rem;border-radius:50px;cursor:pointer;
+  transition:all .25s;position:relative;
+}
+.step-item.active{background:rgba(250,194,19,.08)}
+.step-item.active .step-num{
+  background:var(--primary);color:#000;
+  box-shadow:0 0 0 3px rgba(250,194,19,.2),0 0 14px rgba(250,194,19,.35);
+  animation:pulse-step 2s ease infinite;
+}
+@keyframes pulse-step{
+  0%,100%{box-shadow:0 0 0 3px rgba(250,194,19,.2),0 0 14px rgba(250,194,19,.35)}
+  50%{box-shadow:0 0 0 5px rgba(250,194,19,.1),0 0 20px rgba(250,194,19,.2)}
+}
+.step-item.done .step-num{background:var(--success);color:#000;box-shadow:0 0 8px rgba(34,197,94,.3)}
+.step-item.done .step-num::after{content:'✓';font-size:.7rem}
+.step-item:not(.active):not(.done) .step-num{background:rgba(30,41,59,.8);color:var(--muted);border:1px solid var(--border)}
+.step-num{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:800;transition:all .25s;flex-shrink:0;
+}
+.step-item.done .step-num span{display:none}
+.step-label{font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap;transition:all .25s}
+.step-item.active .step-label{color:var(--primary)}
+.step-item.done .step-label{color:var(--success)}
+.step-item:not(.active):not(.done):hover .step-label{color:var(--muted2)}
+
+/* Connector with animated fill */
+.step-connector{
+  width:36px;height:2px;flex-shrink:0;position:relative;
+  background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;
+}
+.step-connector::after{
+  content:'';position:absolute;left:-100%;top:0;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,var(--success),rgba(34,197,94,.6));
+  border-radius:2px;transition:left .5s ease;
+}
+.step-connector.done::after{left:0}
+
+.topbar-actions{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.btn-back{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem 1rem;border-radius:var(--radius-sm);
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--muted2);font-size:.8rem;font-weight:600;
+  cursor:pointer;text-decoration:none;transition:all .2s;font-family:var(--font);
+}
+.btn-back:hover{border-color:var(--primary-border);color:var(--text)}
+.status-badge{
+  padding:.3rem .8rem;border-radius:50px;font-size:.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.status-badge.borrador{background:rgba(100,116,139,.2);color:var(--muted2)}
+.status-badge.publicado{background:rgba(34,197,94,.15);color:var(--success)}
+
+/* ── Main layout ── */
+.main-layout{display:flex;flex:1;overflow:hidden}
+
+/* ── Editor panel ── */
+.editor-panel{
+  width:440px;flex-shrink:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  position:relative;
+}
+.editor-panel::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;z-index:1;
+  background:linear-gradient(to bottom,transparent 0%,var(--primary) 30%,var(--primary) 70%,transparent 100%);
+  opacity:.35;
+}
+.editor-header{
+  padding:1.1rem 1.5rem .8rem;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  background:linear-gradient(to bottom,rgba(250,194,19,.04),transparent);
+}
+.editor-header h2{font-size:1rem;font-weight:800;margin-bottom:.2rem;letter-spacing:-.01em}
+.editor-header p{font-size:.76rem;color:var(--muted);line-height:1.5}
+.editor-body{flex:1;overflow-y:auto;padding:1.25rem 1.5rem}
+
+/* ── Step panels ── */
+.step-panel{display:none}
+.step-panel.active{display:block}
+
+/* ── Form elements ── */
+label.field-label{
+  display:block;font-size:.68rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+  margin-bottom:.45rem;
+}
+.field-group{margin-bottom:1.2rem}
+input[type=text],input[type=url],select,textarea{
+  width:100%;background:rgba(30,41,59,.6);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-sm);padding:.8rem 1rem;
+  color:var(--text);font-family:var(--font);font-size:.875rem;
+  transition:all .2s;resize:none;
+}
+input[type=text]:hover,input[type=url]:hover,select:hover,textarea:hover{
+  border-color:rgba(255,255,255,.14);
+}
+input[type=text]:focus,input[type=url]:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--primary);
+  border-left-width:3px;
+  padding-left:calc(1rem - 2px);
+  background:rgba(30,41,59,.9);
+  box-shadow:0 0 0 3px rgba(250,194,19,.07),-3px 0 12px rgba(250,194,19,.08);
+}
+select option{background:var(--bg2)}
+textarea{line-height:1.7}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.7rem 1.25rem;border-radius:var(--radius-sm);
+  font-family:var(--font);font-size:.85rem;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#000}
+.btn-primary:hover:not(:disabled){filter:brightness(1.1)}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover:not(:disabled){border-color:var(--primary-border);color:var(--primary)}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-success{background:var(--success);color:#000}
+.btn-success:hover:not(:disabled){filter:brightness(1.1)}
+.btn-full{width:100%}
+.btn-sm{padding:.5rem .9rem;font-size:.78rem}
+
+/* ── Topic input with generate ── */
+.topic-wrap{position:relative}
+.topic-wrap textarea{padding-right:3rem}
+.topic-wrap .ai-badge{
+  position:absolute;top:.75rem;right:.75rem;
+  background:var(--primary);color:#000;font-size:.6rem;font-weight:800;
+  padding:.2rem .4rem;border-radius:4px;letter-spacing:.05em;
+}
+
+/* ── AI generate button area ── */
+.generate-area{
+  background:linear-gradient(135deg,rgba(250,194,19,.1) 0%,rgba(250,194,19,.04) 100%);
+  border:1px solid var(--primary-border);
+  border-radius:var(--radius);padding:1.4rem 1.25rem;margin-bottom:1.25rem;
+  text-align:center;position:relative;overflow:hidden;
+}
+.generate-area::before{
+  content:'';position:absolute;top:-60%;left:-30%;
+  width:160%;height:200%;
+  background:radial-gradient(ellipse at center,rgba(250,194,19,.07) 0%,transparent 65%);
+  pointer-events:none;
+}
+.generate-area .ai-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(250,194,19,.15);border:1px solid rgba(250,194,19,.3);
+  color:var(--primary);font-size:.65rem;font-weight:800;
+  padding:.25rem .7rem;border-radius:50px;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:.75rem;
+}
+.generate-area .generate-hint{
+  font-size:.78rem;color:var(--muted2);margin-bottom:.875rem;line-height:1.5;
+}
+.generate-area .hint-tags{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem;
+}
+.generate-area .hint-tag{
+  font-size:.62rem;font-weight:700;padding:.18rem .55rem;border-radius:4px;
+  background:rgba(255,255,255,.06);color:var(--muted2);border:1px solid var(--border);
+}
+
+/* ── Article fields (shown after generation) ── */
+.generated-fields{
+  border-top:1px solid var(--border);padding-top:1.25rem;margin-top:1.25rem;
+}
+.generated-fields .section-title{
+  font-size:.75rem;font-weight:700;color:var(--primary);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+
+/* ── Image preview ── */
+.image-preview-box{
+  position:relative;border-radius:var(--radius);overflow:hidden;
+  background:var(--bg3);border:1px solid var(--border);
+  aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+  margin-bottom:1rem;
+}
+.image-preview-box img{
+  width:100%;height:100%;object-fit:cover;
+  position:absolute;inset:0;
+}
+.image-placeholder{
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  color:var(--muted);
+}
+.image-placeholder i{font-size:2rem}
+.image-placeholder p{font-size:.78rem}
+
+/* ── Upload drop zone ── */
+.drop-zone{
+  border:2px dashed var(--border);border-radius:var(--radius);
+  padding:1.5rem;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.drop-zone:hover,.drop-zone.dragover{
+  border-color:var(--primary-border);background:var(--primary-dim);
+}
+.drop-zone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+.drop-zone i{font-size:1.5rem;color:var(--muted);margin-bottom:.5rem;display:block}
+.drop-zone p{font-size:.8rem;color:var(--muted2)}
+.drop-zone span{font-size:.72rem;color:var(--muted)}
+
+/* ── Ad spaces ── */
+.ad-spaces-grid{display:flex;flex-direction:column;gap:1rem}
+.ad-space-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color .2s;
+}
+.ad-space-card:hover{border-color:rgba(255,255,255,.12)}
+.ad-space-card.color-blue{border-left:3px solid #7dd3fc}
+.ad-space-card.color-purple{border-left:3px solid #a78bfa}
+.ad-space-card.color-amber{border-left:3px solid #fbbf24}
+.ad-space-header{
+  padding:.65rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ad-space-header .ad-name{font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
+.ad-space-header .ad-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ad-space-header .ad-size{font-size:.65rem;color:var(--muted);background:var(--bg2);padding:.18rem .5rem;border-radius:4px;font-weight:600}
+.ad-space-body{padding:1rem}
+.ad-thumb{
+  width:100%;border-radius:var(--radius-sm);overflow:hidden;
+  background:var(--bg2);margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;
+  min-height:60px;
+}
+.ad-thumb img{width:100%;height:auto;max-height:120px;object-fit:cover;display:none}
+.ad-thumb-placeholder{font-size:.75rem;color:var(--muted);padding:.75rem;text-align:center}
+.ad-uploaded .ad-thumb img{display:block}
+.ad-uploaded .ad-thumb-placeholder{display:none}
+.ad-space-fields{display:flex;flex-direction:column;gap:.5rem}
+.ad-space-fields input{padding:.6rem .8rem;font-size:.8rem}
+
+/* ── Summary (step 5) ── */
+.summary-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:1.5rem;
+}
+.summary-img{width:100%;height:120px;object-fit:cover;display:none}
+.summary-img.visible{display:block}
+.summary-body{padding:1rem}
+.summary-title{font-family:var(--font-serif);font-size:1rem;font-weight:700;margin-bottom:.4rem;line-height:1.3}
+.summary-meta{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem}
+.summary-meta span{font-size:.72rem;color:var(--muted2);display:flex;align-items:center;gap:.25rem}
+.summary-excerpt{font-size:.8rem;color:var(--muted2);line-height:1.6}
+.summary-ads{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.summary-ads h4{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.6rem}
+.ad-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.ad-chip{
+  font-size:.7rem;padding:.25rem .6rem;border-radius:50px;font-weight:600;
+  display:flex;align-items:center;gap:.3rem;
+}
+.ad-chip.filled{background:rgba(34,197,94,.15);color:var(--success)}
+.ad-chip.empty{background:var(--bg2);color:var(--muted)}
+.publish-cta{
+  background:linear-gradient(135deg,rgba(250,194,19,.12),rgba(250,194,19,.04));
+  border:1px solid var(--primary-border);border-radius:var(--radius);
+  padding:1.5rem;text-align:center;
+}
+.publish-cta h3{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.publish-cta p{font-size:.8rem;color:var(--muted2);margin-bottom:1.25rem}
+
+/* ── Preview panel ── */
+.preview-panel{
+  flex:1;overflow:hidden;display:flex;flex-direction:column;
+  background:var(--bg);
+}
+.preview-header{
+  padding:.65rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(2,6,23,0.9);flex-shrink:0;
+}
+.preview-header h3{
+  font-size:.75rem;font-weight:700;color:var(--muted);
+  display:flex;align-items:center;gap:.5rem;
+}
+.preview-header h3::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--success);box-shadow:0 0 6px var(--success);
+  display:inline-block;animation:blink 2s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.preview-device-btns{display:flex;gap:.3rem}
+.device-btn{
+  width:28px;height:28px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.72rem;
+  cursor:pointer;color:var(--muted);transition:all .2s;
+}
+.device-btn:hover{color:var(--muted2);border-color:rgba(255,255,255,.15)}
+.device-btn.active{background:var(--primary-dim);border-color:var(--primary-border);color:var(--primary)}
+.preview-scroll{
+  flex:1;overflow-y:auto;
+  display:flex;align-items:flex-start;justify-content:center;padding:2rem 1.5rem;
+  background:
+    radial-gradient(ellipse at 20% 30%,rgba(250,194,19,.04) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 70%,rgba(59,130,246,.03) 0%,transparent 50%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.015) 39px,rgba(255,255,255,.015) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.015) 39px,rgba(255,255,255,.015) 40px);
+}
+.preview-frame{
+  background:#fff;color:#1a1a1a;max-width:760px;width:100%;
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  font-family:'Georgia',serif;
+  transition:max-width .35s cubic-bezier(.4,0,.2,1);
+}
+.preview-frame.tablet{max-width:500px}
+.preview-frame.mobile{max-width:375px}
+
+/* ── Article preview ── */
+.p-site-bar{
+  background:#0f172a;padding:.5rem 1.25rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.p-logo{font-size:.75rem;font-weight:800;color:#fac213;letter-spacing:.05em}
+.p-nav{display:flex;gap:.75rem}
+.p-nav span{font-size:.65rem;color:rgba(255,255,255,.5)}
+.p-ad-banner{
+  background:linear-gradient(135deg,#eff6ff,#f0f9ff);
+  border:1.5px dashed #7dd3fc;
+  display:flex;align-items:center;justify-content:center;
+  min-height:90px;position:relative;overflow:hidden;
+}
+.p-ad-banner img{width:100%;max-height:120px;object-fit:cover;display:none}
+.p-ad-banner.has-img img{display:block}
+.p-ad-banner.has-img .ad-label{display:none}
+.ad-label{
+  display:flex;align-items:center;gap:.35rem;
+  font-size:.62rem;font-family:'Montserrat',sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  position:absolute;color:#64748b;
+}
+.ad-label::before{
+  content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.p-article-wrap{display:flex;gap:1.5rem;padding:1.5rem}
+.p-article-main{flex:1;min-width:0}
+.p-article-sidebar{width:300px;flex-shrink:0}
+.p-category{
+  font-size:.65rem;font-weight:700;font-family:'Montserrat',sans-serif;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#fac213;background:#0f172a;padding:.3rem .7rem;
+  border-radius:4px;display:inline-block;margin-bottom:.75rem;
+}
+.p-title{
+  font-size:1.4rem;font-weight:700;line-height:1.25;
+  margin-bottom:.75rem;color:#0f172a;
+}
+.p-meta{
+  display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;
+  padding-bottom:1rem;border-bottom:2px solid #f1f5f9;
+}
+.p-meta span{font-size:.7rem;color:#64748b;font-family:'Montserrat',sans-serif;display:flex;align-items:center;gap:.25rem}
+.p-hero{width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:1rem;display:none}
+.p-hero.visible{display:block}
+.p-hero-placeholder{
+  width:100%;height:200px;background:#f1f5f9;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:1rem;
+  font-size:.8rem;color:#94a3b8;font-family:'Montserrat',sans-serif;
+}
+.p-hero-placeholder.hidden{display:none}
+.p-excerpt{
+  font-size:.95rem;font-weight:700;line-height:1.6;
+  color:#1e293b;margin-bottom:1rem;font-style:italic;
+}
+.p-content{font-size:.88rem;line-height:1.8;color:#374151}
+.p-content p{margin-bottom:.75rem}
+.p-ad-mid{
+  background:linear-gradient(135deg,#fffbeb,#fefce8);
+  border:1.5px dashed #fbbf24;
+  min-height:60px;display:flex;align-items:center;justify-content:center;
+  margin:1.25rem 0;border-radius:6px;position:relative;overflow:hidden;
+}
+.p-ad-mid img{width:100%;max-height:90px;object-fit:cover;display:none}
+.p-ad-mid.has-img img{display:block}
+.p-ad-mid.has-img .ad-label{display:none}
+.p-ad-mid .ad-label::before{background:#fbbf24}
+.p-sidebar-ad{
+  background:linear-gradient(135deg,#faf5ff,#f5f3ff);
+  border:1.5px dashed #a78bfa;
+  min-height:250px;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;margin-top:.5rem;position:relative;overflow:hidden;
+  width:100%;
+}
+.p-sidebar-ad img{width:100%;height:250px;object-fit:cover;display:none}
+.p-sidebar-ad.has-img img{display:block}
+.p-sidebar-ad.has-img .ad-label{display:none}
+.p-sidebar-ad .ad-label{flex-direction:column;gap:.25rem;text-align:center}
+.p-sidebar-ad .ad-label::before{background:#a78bfa;width:8px;height:8px}
+.p-ad-bottom{
+  background:linear-gradient(135deg,#eff6ff,#f0f9ff);
+  border:1.5px dashed #7dd3fc;
+  min-height:90px;display:flex;align-items:center;justify-content:center;
+  margin:1.5rem;border-radius:6px;position:relative;overflow:hidden;
+}
+.p-ad-bottom img{width:100%;max-height:120px;object-fit:cover;display:none}
+.p-ad-bottom.has-img img{display:block}
+.p-ad-bottom.has-img .ad-label{display:none}
+.p-ad-banner .ad-label::before{background:#7dd3fc}
+.p-tags{padding:0 1.5rem 1.5rem;display:flex;flex-wrap:wrap;gap:.4rem}
+.p-tag{font-size:.65rem;font-family:'Montserrat',sans-serif;font-weight:600;color:#475569;background:#f1f5f9;padding:.2rem .5rem;border-radius:4px}
+
+/* ── Footer nav ── */
+.nav-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.875rem 1.5rem;
+  background:rgba(2,6,23,0.95);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.nav-footer-left,.nav-footer-right{display:flex;align-items:center;gap:.75rem}
+.nav-progress{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+.progress-bar{width:120px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--primary);border-radius:2px;transition:width .4s ease}
+
+/* ── Toast notifications ── */
+#toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.toast-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.8rem 1.1rem;border-radius:var(--radius-sm);
+  font-size:.82rem;font-weight:600;
+  animation:slideIn .3s ease;max-width:320px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
+.toast-success{background:#052e16;border:1px solid rgba(34,197,94,.3);color:#86efac}
+.toast-error{background:#2d0a0a;border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.toast-info{background:#0c1a2e;border:1px solid rgba(59,130,246,.3);color:#93c5fd}
+
+/* ── Loading spinner ── */
+.spinner{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(0,0,0,.3);border-top-color:#000;
+  border-radius:50%;animation:spin .6s linear infinite;
+}
+.spinner.light{border-color:rgba(255,255,255,.3);border-top-color:var(--text)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Success screen ── */
+.success-screen{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;height:100%;
+}
+.success-screen.show{display:flex}
+.success-icon{
+  width:80px;height:80px;background:rgba(34,197,94,.15);border:2px solid var(--success);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;color:var(--success);margin-bottom:1.5rem;
+}
+.success-screen h2{font-family:var(--font-serif);font-size:1.5rem;margin-bottom:.5rem}
+.success-screen p{color:var(--muted2);font-size:.875rem;max-width:300px;margin-bottom:1.5rem}
+
+/* ── Helpers ── */
+.flex{display:flex}.gap-sm{gap:.5rem}.gap-md{gap:.75rem}
+.mt-sm{margin-top:.5rem}.mt-md{margin-top:.75rem}.mt-lg{margin-top:1.25rem}
+.text-sm{font-size:.8rem}.text-xs{font-size:.72rem}.text-muted{color:var(--muted2)}
+.text-primary{color:var(--primary)}
+.hr{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+
+@media(max-width:900px){
+  .editor-panel{width:100%;max-width:100%}
+  .preview-panel{display:none}
+  .topbar-steps .step-label{display:none}
+  .step-connector{width:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN OVERLAY ══ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <img src="../sentido_vial_logo_premium_1777690282807.png" alt="Sentido Vial" style="height:52px;width:auto;object-fit:contain;margin-bottom:1.25rem;filter:drop-shadow(0 0 12px rgba(250,194,19,.3))">
+    <h1>Sala de Redacción</h1>
+    <p>Ingresa tus credenciales de administrador para continuar</p>
+    <input type="text" id="inp-user" placeholder="Usuario" value="admin" autocomplete="username">
+    <input type="password" id="inp-pass" placeholder="Contraseña" autocomplete="current-password">
+    <div id="login-error">Credenciales incorrectas. Intente de nuevo.</div>
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> Ingresar
+    </button>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app" style="display:none">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img class="brand-logo" src="../sentido_vial_logo_premium_1777690282807.png" alt="Sentido Vial">
+      <div>
+        <div class="brand-name">Sentido Vial</div>
+        <div class="brand-sub">Sala de Redacción</div>
+      </div>
+    </div>
+
+    <div class="topbar-steps">
+      <div class="step-item active" id="si-1" onclick="tryGoToStep(1)">
+        <div class="step-num"><span>1</span></div>
+        <div class="step-label">Redactar</div>
+      </div>
+      <div class="step-connector" id="sc-1"></div>
+      <div class="step-item" id="si-2" onclick="tryGoToStep(2)">
+        <div class="step-num"><span>2</span></div>
+        <div class="step-label">Imagen</div>
+      </div>
+      <div class="step-connector" id="sc-2"></div>
+      <div class="step-item" id="si-3" onclick="tryGoToStep(3)">
+        <div class="step-num"><span>3</span></div>
+        <div class="step-label">Revisar</div>
+      </div>
+      <div class="step-connector" id="sc-3"></div>
+      <div class="step-item" id="si-4" onclick="tryGoToStep(4)">
+        <div class="step-num"><span>4</span></div>
+        <div class="step-label">Publicidad</div>
+      </div>
+      <div class="step-connector" id="sc-4"></div>
+      <div class="step-item" id="si-5" onclick="tryGoToStep(5)">
+        <div class="step-num"><span>5</span></div>
+        <div class="step-label">Publicar</div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="status-badge borrador" id="status-badge">Borrador</span>
+      <a href="../index.html" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- ── EDITOR PANEL ── -->
+    <div class="editor-panel">
+
+      <!-- STEP 1: Redactar -->
+      <div id="panel-1" class="step-panel active" style="display:flex;flex-direction:column;height:100%">
+        <div class="editor-header">
+          <h2><i class="fas fa-pen-nib text-primary" style="margin-right:.4rem"></i>Redactar noticia</h2>
+          <p>Escribe el tema y deja que la IA genere el contenido completo</p>
+        </div>
+        <div class="editor-body">
+          <!-- Topic + Generate -->
+          <div class="field-group">
+            <label class="field-label">Tema de la noticia</label>
+            <div class="topic-wrap">
+              <textarea id="inp-topic" rows="3" placeholder="Ej: SETTA implementa nuevo sistema de semaforización inteligente en el centro de Armenia..."></textarea>
+              <span class="ai-badge">IA</span>
+            </div>
+          </div>
+          <div class="generate-area">
+            <div class="ai-pill"><i class="fas fa-microchip"></i> Gemini AI</div>
+            <p class="generate-hint">Genera automáticamente todos los campos del artículo</p>
+            <div class="hint-tags">
+              <span class="hint-tag">Titular</span>
+              <span class="hint-tag">Extracto</span>
+              <span class="hint-tag">Contenido HTML</span>
+              <span class="hint-tag">Categoría</span>
+              <span class="hint-tag">Hashtags</span>
+            </div>
+            <button class="btn btn-primary btn-full" id="btn-generate" onclick="generateArticle()">
+              <i class="fas fa-magic"></i> Generar noticia con IA
+            </button>
+          </div>
+
+          <!-- Fields (always shown, editable after generation) -->
+          <div class="generated-fields">
+            <div class="section-title"><i class="fas fa-file-alt"></i>Contenido del artículo</div>
+
+            <div class="field-group">
+              <label class="field-label">Título</label>
+              <input type="text" id="inp-titulo" placeholder="Titular de la noticia..." oninput="syncFromFields()">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Extracto (2–3 líneas)</label>
+              <textarea id="inp-extracto" rows="3" placeholder="Párrafo introductorio..." oninput="syncFromFields()"></textarea>
+            </div>
+            <div class="flex gap-md">
+              <div class="field-group" style="flex:1">
+                <label class="field-label">Categoría</label>
+                <select id="inp-categoria" onchange="syncFromFields()">
+                  <option value="Movilidad">Movilidad</option>
+                  <option value="SETTA">SETTA</option>
+                  <option value="Nacional">Nacional</option>
+                  <option value="Judicial">Judicial</option>
+                  <option value="Turismo">Turismo</option>
+                  <option value="Cultura">Cultura</option>
+                  <option value="Quindío">Quindío</option>
+                </select>
+              </div>
+              <div class="field-group" style="flex:1">
+                <label class="field-label">Fecha</label>
+                <input type="text" id="inp-fecha" placeholder="YYYY-MM-DD" oninput="syncFromFields()">
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Contenido (HTML)</label>
+              <textarea id="inp-contenido" rows="10" placeholder="<p>Cuerpo de la noticia...</p>" oninput="syncFromFields()"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Hashtags</label>
+              <input type="text" id="inp-hashtags" placeholder="#Quindío #SentidoVial #Movilidad" oninput="syncFromFields()">
+            </div>
+
+            <button class="btn btn-ghost btn-sm" onclick="improveContent()">
+              <i class="fas fa-wand-magic-sparkles"></i> Mejorar redacción con IA
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Imagen -->
+      <div id="panel-2" class="step-panel">
+        <div class="editor-header">
+          <h2><i class="fas fa-image text-primary" style="margin-right:.4rem"></i>Imagen de portada</h2>
+          <p>Genera una imagen con IA basada en el contexto del artículo, o carga la tuya</p>
+        </div>
+        <div class="editor-body">
+          <!-- AI Image Generation -->
+          <div class="field-group">
+            <label class="field-label">Prompt de imagen (auto-generado)</label>
+            <textarea id="inp-image-prompt" rows="4" placeholder="Descripción visual para la imagen..."></textarea>
+            <div class="mt-sm flex gap-sm">
+              <button class="btn btn-ghost btn-sm" onclick="autoFillImagePrompt()">
+                <i class="fas fa-sync"></i> Regenerar prompt
+              </button>
+            </div>
+          </div>
+
+          <div class="generate-area">
+            <div class="ai-pill"><i class="fas fa-image"></i> Imagen 3.0</div>
+            <p class="generate-hint">Fotografía editorial 16:9 generada con IA contextual</p>
+            <div class="hint-tags">
+              <span class="hint-tag">Foto-realista</span>
+              <span class="hint-tag">Estilo periodístico</span>
+              <span class="hint-tag">Alta resolución</span>
+            </div>
+            <button class="btn btn-primary btn-full" id="btn-gen-image" onclick="generateImage()">
+              <i class="fas fa-magic"></i> Generar imagen con IA
+            </button>
+          </div>
+
+          <!-- Image preview -->
+          <div class="image-preview-box" id="img-preview-box">
+            <div class="image-placeholder" id="img-placeholder">
+              <i class="fas fa-image"></i>
+              <p>Sin imagen aún</p>
+            </div>
+            <img id="img-preview" src="" alt="" style="display:none">
+          </div>
+
+          <!-- Upload alternative -->
+          <hr class="hr">
+          <label class="field-label">O carga tu propia imagen</label>
+          <div class="drop-zone" id="drop-zone-main" ondragover="handleDrag(event,this)" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'main')">
+            <input type="file" accept="image/*" onchange="handleImageUpload(this,'main')">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Arrastra una imagen aquí</p>
+            <span>JPG, PNG, WEBP — máx. 5 MB</span>
+          </div>
+
+          <div class="field-group mt-md">
+            <label class="field-label">O pega una URL de imagen</label>
+            <div class="flex gap-sm">
+              <input type="url" id="inp-img-url" placeholder="https://..." style="flex:1">
+              <button class="btn btn-secondary btn-sm" onclick="setImageFromUrl()">
+                <i class="fas fa-link"></i> Usar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Revisar -->
+      <div id="panel-3" class="step-panel">
+        <div class="editor-header">
+          <h2><i class="fas fa-eye text-primary" style="margin-right:.4rem"></i>Revisión editorial</h2>
+          <p>Revisa el artículo completo antes de configurar la publicidad</p>
+        </div>
+        <div class="editor-body">
+          <div style="background:rgba(250,194,19,.08);border:1px solid var(--primary-border);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem">
+            <p class="text-sm" style="color:var(--primary);font-weight:600;margin-bottom:.3rem"><i class="fas fa-lightbulb" style="margin-right:.4rem"></i>Vista previa en tiempo real</p>
+            <p class="text-xs text-muted">El panel derecho muestra exactamente cómo se verá la noticia publicada. Puedes editar cualquier campo a continuación.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Título</label>
+            <input type="text" id="rev-titulo" oninput="syncReview('titulo',this.value)">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Extracto</label>
+            <textarea id="rev-extracto" rows="3" oninput="syncReview('extracto',this.value)"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Categoría</label>
+            <select id="rev-categoria" onchange="syncReview('categoria',this.value)">
+              <option value="Movilidad">Movilidad</option>
+              <option value="SETTA">SETTA</option>
+              <option value="Nacional">Nacional</option>
+              <option value="Judicial">Judicial</option>
+              <option value="Turismo">Turismo</option>
+              <option value="Cultura">Cultura</option>
+              <option value="Quindío">Quindío</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Contenido (HTML)</label>
+            <textarea id="rev-contenido" rows="12" oninput="syncReview('contenido',this.value)"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Hashtags</label>
+            <input type="text" id="rev-hashtags" oninput="syncReview('hashtags',this.value)">
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="saveDraftSilent()">
+            <i class="fas fa-save"></i> Guardar borrador
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Publicidad -->
+      <div id="panel-4" class="step-panel">
+        <div class="editor-header">
+          <h2><i class="fas fa-ad text-primary" style="margin-right:.4rem"></i>Espacios publicitarios</h2>
+          <p>Carga los anuncios para cada espacio disponible en el artículo</p>
+        </div>
+        <div class="editor-body">
+          <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:var(--radius);padding:.875rem 1rem;margin-bottom:1.25rem">
+            <p class="text-xs" style="color:#93c5fd"><i class="fas fa-info-circle" style="margin-right:.4rem"></i>Todos los espacios son opcionales. El artículo se publicará con los anuncios que configures.</p>
+          </div>
+
+          <div class="ad-spaces-grid">
+            <!-- Banner Superior -->
+            <div class="ad-space-card color-blue" id="ad-card-banner_superior">
+              <div class="ad-space-header">
+                <span class="ad-name"><span class="ad-dot" style="background:#7dd3fc"></span>Banner Superior</span>
+                <span class="ad-size">728 × 90 px</span>
+              </div>
+              <div class="ad-space-body">
+                <div class="ad-thumb" id="ad-thumb-banner_superior">
+                  <div class="ad-thumb-placeholder">Sin imagen</div>
+                  <img id="ad-img-banner_superior" src="" alt="">
+                </div>
+                <div class="ad-space-fields">
+                  <div class="drop-zone" style="padding:.75rem" ondragover="handleDrag(event,this)" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'banner_superior')">
+                    <input type="file" accept="image/*" onchange="handleAdUpload(this,'banner_superior')">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:1rem"></i>
+                    <p style="font-size:.72rem">Clic o arrastra imagen</p>
+                  </div>
+                  <input type="url" id="ad-link-banner_superior" placeholder="URL destino (clic en anuncio)..." class="mt-sm">
+                </div>
+              </div>
+            </div>
+
+            <!-- Lateral Derecho -->
+            <div class="ad-space-card color-purple" id="ad-card-lateral_der">
+              <div class="ad-space-header">
+                <span class="ad-name"><span class="ad-dot" style="background:#a78bfa"></span>Lateral Derecho</span>
+                <span class="ad-size">300 × 250 px</span>
+              </div>
+              <div class="ad-space-body">
+                <div class="ad-thumb" id="ad-thumb-lateral_der">
+                  <div class="ad-thumb-placeholder">Sin imagen</div>
+                  <img id="ad-img-lateral_der" src="" alt="">
+                </div>
+                <div class="ad-space-fields">
+                  <div class="drop-zone" style="padding:.75rem" ondragover="handleDrag(event,this)" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'lateral_der')">
+                    <input type="file" accept="image/*" onchange="handleAdUpload(this,'lateral_der')">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:1rem"></i>
+                    <p style="font-size:.72rem">Clic o arrastra imagen</p>
+                  </div>
+                  <input type="url" id="ad-link-lateral_der" placeholder="URL destino..." class="mt-sm">
+                </div>
+              </div>
+            </div>
+
+            <!-- Banner Medio -->
+            <div class="ad-space-card color-amber" id="ad-card-banner_medio">
+              <div class="ad-space-header">
+                <span class="ad-name"><span class="ad-dot" style="background:#fbbf24"></span>Banner Medio</span>
+                <span class="ad-size">468 × 60 px</span>
+              </div>
+              <div class="ad-space-body">
+                <div class="ad-thumb" id="ad-thumb-banner_medio">
+                  <div class="ad-thumb-placeholder">Sin imagen</div>
+                  <img id="ad-img-banner_medio" src="" alt="">
+                </div>
+                <div class="ad-space-fields">
+                  <div class="drop-zone" style="padding:.75rem" ondragover="handleDrag(event,this)" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'banner_medio')">
+                    <input type="file" accept="image/*" onchange="handleAdUpload(this,'banner_medio')">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:1rem"></i>
+                    <p style="font-size:.72rem">Clic o arrastra imagen</p>
+                  </div>
+                  <input type="url" id="ad-link-banner_medio" placeholder="URL destino..." class="mt-sm">
+                </div>
+              </div>
+            </div>
+
+            <!-- Banner Inferior -->
+            <div class="ad-space-card color-blue" id="ad-card-banner_inferior">
+              <div class="ad-space-header">
+                <span class="ad-name"><span class="ad-dot" style="background:#7dd3fc"></span>Banner Inferior</span>
+                <span class="ad-size">728 × 90 px</span>
+              </div>
+              <div class="ad-space-body">
+                <div class="ad-thumb" id="ad-thumb-banner_inferior">
+                  <div class="ad-thumb-placeholder">Sin imagen</div>
+                  <img id="ad-img-banner_inferior" src="" alt="">
+                </div>
+                <div class="ad-space-fields">
+                  <div class="drop-zone" style="padding:.75rem" ondragover="handleDrag(event,this)" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'banner_inferior')">
+                    <input type="file" accept="image/*" onchange="handleAdUpload(this,'banner_inferior')">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:1rem"></i>
+                    <p style="font-size:.72rem">Clic o arrastra imagen</p>
+                  </div>
+                  <input type="url" id="ad-link-banner_inferior" placeholder="URL destino..." class="mt-sm">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: Publicar -->
+      <div id="panel-5" class="step-panel">
+        <div class="editor-header">
+          <h2><i class="fas fa-rocket text-primary" style="margin-right:.4rem"></i>Aprobar y publicar</h2>
+          <p>Revisa el resumen y publica la noticia en el sitio</p>
+        </div>
+        <div class="editor-body">
+          <!-- Summary card -->
+          <div class="summary-card">
+            <img id="sum-img" class="summary-img" src="" alt="">
+            <div class="summary-body">
+              <span class="status-badge borrador" id="sum-categoria" style="margin-bottom:.75rem;display:inline-block">Categoría</span>
+              <div class="summary-title" id="sum-titulo">—</div>
+              <div class="summary-meta">
+                <span><i class="fas fa-calendar"></i> <span id="sum-fecha">—</span></span>
+                <span><i class="fas fa-user"></i> Redacción SV</span>
+              </div>
+              <div class="summary-excerpt" id="sum-extracto">—</div>
+              <div class="summary-ads">
+                <h4>Publicidad configurada</h4>
+                <div class="ad-chips" id="sum-ads"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Publish CTA -->
+          <div class="publish-cta">
+            <h3>¿Listo para publicar?</h3>
+            <p>Al aprobar, la noticia se publicará automáticamente y quedará visible para todos los lectores.</p>
+            <button class="btn btn-success btn-full" id="btn-publish" onclick="publishArticle()">
+              <i class="fas fa-rocket"></i> Aprobar y publicar ahora
+            </button>
+          </div>
+
+          <!-- Success screen (replaces editor content) -->
+          <div class="success-screen" id="success-screen">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h2>¡Noticia publicada!</h2>
+            <p>El artículo ya es visible para todos los lectores de Sentido Vial.</p>
+            <div class="flex gap-md" style="flex-wrap:wrap;justify-content:center">
+              <a href="../index.html#view-noticias" class="btn btn-primary">
+                <i class="fas fa-eye"></i> Ver en el sitio
+              </a>
+              <button class="btn btn-secondary" onclick="resetWorkflow()">
+                <i class="fas fa-plus"></i> Nueva noticia
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /editor-panel -->
+
+    <!-- ── PREVIEW PANEL ── -->
+    <div class="preview-panel">
+      <div class="preview-header">
+        <h3><i class="fas fa-desktop" style="margin-right:.4rem"></i>Vista previa del artículo</h3>
+        <div class="preview-device-btns">
+          <div class="device-btn active" id="dev-desktop" title="Desktop" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></div>
+          <div class="device-btn" id="dev-tablet" title="Tablet" onclick="setDevice('tablet')"><i class="fas fa-tablet-alt"></i></div>
+          <div class="device-btn" id="dev-mobile" title="Móvil" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></div>
+        </div>
+      </div>
+      <div class="preview-scroll">
+        <div class="preview-frame" id="preview-frame">
+          <!-- Site bar -->
+          <div class="p-site-bar">
+            <span class="p-logo">SENTIDO VIAL</span>
+            <div class="p-nav">
+              <span>Noticias</span><span>Movilidad</span><span>Asesoría</span>
+            </div>
+          </div>
+
+          <!-- Ad: Banner Superior -->
+          <div class="p-ad-banner" id="pv-banner-superior">
+            <span class="ad-label">Publicidad · Banner Superior (728×90)</span>
+            <img id="pv-img-banner_superior" src="" alt="">
+          </div>
+
+          <!-- Article content -->
+          <div class="p-article-wrap">
+            <div class="p-article-main">
+              <div class="p-category" id="pv-category">Categoría</div>
+              <div class="p-title" id="pv-title">El título del artículo aparecerá aquí</div>
+              <div class="p-meta">
+                <span><i class="fas fa-calendar-alt"></i> <span id="pv-fecha">—</span></span>
+                <span><i class="fas fa-user"></i> Redacción SV</span>
+                <span><i class="fas fa-tag"></i> <span id="pv-cat2">—</span></span>
+              </div>
+              <div class="p-hero-placeholder" id="pv-hero-placeholder">
+                <span>Imagen de portada</span>
+              </div>
+              <img class="p-hero" id="pv-hero" src="" alt="">
+              <div class="p-excerpt" id="pv-excerpt">El extracto del artículo aparecerá aquí...</div>
+              <div class="p-ad-mid" id="pv-banner-medio">
+                <span class="ad-label">Publicidad · Banner Medio (468×60)</span>
+                <img id="pv-img-banner_medio" src="" alt="">
+              </div>
+              <div class="p-content" id="pv-content">
+                <p style="color:#94a3b8;font-style:italic">El contenido del artículo aparecerá aquí...</p>
+              </div>
+            </div>
+            <div class="p-article-sidebar">
+              <div style="font-size:.7rem;font-family:'Montserrat',sans-serif;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.1em;margin-bottom:.5rem">Publicidad</div>
+              <div class="p-sidebar-ad" id="pv-lateral-der">
+                <span class="ad-label">Lateral (300×250)</span>
+                <img id="pv-img-lateral_der" src="" alt="">
+              </div>
+            </div>
+          </div>
+
+          <!-- Ad: Banner Inferior -->
+          <div class="p-ad-bottom" id="pv-banner-inferior">
+            <span class="ad-label">Publicidad · Banner Inferior (728×90)</span>
+            <img id="pv-img-banner_inferior" src="" alt="">
+          </div>
+
+          <!-- Tags -->
+          <div class="p-tags" id="pv-tags"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-layout -->
+
+  <!-- NAV FOOTER -->
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      <button class="btn btn-secondary" id="btn-prev" onclick="prevStep()" style="display:none">
+        <i class="fas fa-arrow-left"></i> Anterior
+      </button>
+      <div class="nav-progress">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+        <span id="progress-text">Paso 1 de 5</span>
+      </div>
+    </div>
+    <div class="nav-footer-right">
+      <button class="btn btn-ghost btn-sm" id="btn-save-draft" onclick="saveDraftSilent()">
+        <i class="fas fa-save"></i> Guardar borrador
+      </button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">
+        Siguiente <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+const API = '../api';
+let adminToken = '';
+let currentStep = 1;
+
+const art = {
+  id: null,
+  titulo: '',
+  extracto: '',
+  contenido: '',
+  categoria: 'Movilidad',
+  imagen_url: '',
+  hashtags: [],
+  fecha: new Date().toISOString().split('T')[0],
+  ads: {
+    banner_superior: { imagen_url: '', link_url: '' },
+    lateral_der:     { imagen_url: '', link_url: '' },
+    banner_medio:    { imagen_url: '', link_url: '' },
+    banner_inferior: { imagen_url: '', link_url: '' },
+  }
+};
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin() {
+  const user = document.getElementById('inp-user').value.trim();
+  const pass = document.getElementById('inp-pass').value.trim();
+  if (user === 'admin' && pass === 'vial2026') {
+    adminToken = await sha256('vial2026_admin_token_secreto');
+    localStorage.setItem('sv_admin_token', adminToken);
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-overlay').style.display !== 'none') doLogin();
+});
+
+async function checkAuth() {
+  const saved = localStorage.getItem('sv_admin_token');
+  if (saved) {
+    adminToken = saved;
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  }
+}
+
+function init() {
+  document.getElementById('inp-fecha').value = art.fecha;
+  renderPreview();
+  // Load from URL param (edit mode)
+  const params = new URLSearchParams(location.search);
+  const editId = params.get('id');
+  if (editId) loadArticle(editId);
+}
+
+// ══════════════════════════════════════════════════════
+//  API CALLS
+// ══════════════════════════════════════════════════════
+async function apiCall(path, method = 'GET', body = null, isForm = false) {
+  try {
+    const opts = { method, headers: { 'X-Admin-Token': adminToken } };
+    if (body && !isForm) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+    else if (body) opts.body = body;
+    const res = await fetch(`${API}/${path}`, opts);
+    return res.json();
+  } catch(e) {
+    return { error: 'Error de conexión: ' + e.message };
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  STEP NAVIGATION
+// ══════════════════════════════════════════════════════
+function tryGoToStep(n) {
+  if (n <= currentStep) goToStep(n);
+}
+
+function nextStep() {
+  if (!validateCurrentStep()) return;
+  if (currentStep === 4) { populateSummary(); }
+  if (currentStep < 5) goToStep(currentStep + 1);
+}
+
+function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
+
+function goToStep(n) {
+  document.getElementById(`panel-${currentStep}`).classList.remove('active');
+  document.getElementById(`panel-${currentStep}`).style.display = 'none';
+  currentStep = n;
+  const panel = document.getElementById(`panel-${n}`);
+  panel.style.display = n === 1 ? 'flex' : 'block';
+  panel.style.flexDirection = n === 1 ? 'column' : '';
+  panel.style.height = n === 1 ? '100%' : '';
+  panel.classList.add('active');
+
+  // Sync review fields when entering step 3
+  if (n === 3) syncReviewFields();
+  if (n === 2) autoFillImagePrompt();
+
+  updateStepUI();
+  renderPreview();
+}
+
+function updateStepUI() {
+  for (let i = 1; i <= 5; i++) {
+    const si = document.getElementById(`si-${i}`);
+    si.classList.remove('active','done');
+    if (i < currentStep) si.classList.add('done');
+    else if (i === currentStep) si.classList.add('active');
+    const sc = document.getElementById(`sc-${i}`);
+    if (sc) sc.classList.toggle('done', i < currentStep);
+  }
+  document.getElementById('btn-prev').style.display = currentStep > 1 ? 'inline-flex' : 'none';
+  const btnNext = document.getElementById('btn-next');
+  if (currentStep === 5) { btnNext.style.display = 'none'; }
+  else { btnNext.style.display = 'inline-flex'; btnNext.innerHTML = currentStep === 4 ? 'Ver resumen <i class="fas fa-arrow-right"></i>' : 'Siguiente <i class="fas fa-arrow-right"></i>'; }
+  document.getElementById('progress-fill').style.width = (currentStep * 20) + '%';
+  document.getElementById('progress-text').textContent = `Paso ${currentStep} de 5`;
+}
+
+function validateCurrentStep() {
+  if (currentStep === 1) {
+    if (!art.titulo.trim()) { showToast('El título es obligatorio', 'error'); return false; }
+    if (!art.extracto.trim()) { showToast('El extracto es obligatorio', 'error'); return false; }
+    if (!art.contenido.trim()) { showToast('El contenido es obligatorio', 'error'); return false; }
+  }
+  if (currentStep === 4) {
+    // Auto-save draft before ads step completes
+    saveDraftSilent();
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════
+//  FIELD SYNC (Step 1 → State)
+// ══════════════════════════════════════════════════════
+function syncFromFields() {
+  art.titulo    = document.getElementById('inp-titulo').value;
+  art.extracto  = document.getElementById('inp-extracto').value;
+  art.contenido = document.getElementById('inp-contenido').value;
+  art.categoria = document.getElementById('inp-categoria').value;
+  art.fecha     = document.getElementById('inp-fecha').value || art.fecha;
+  const hStr = document.getElementById('inp-hashtags').value;
+  art.hashtags  = hStr.split(/\s+/).filter(h => h.startsWith('#'));
+  renderPreview();
+}
+
+function syncReviewFields() {
+  document.getElementById('rev-titulo').value    = art.titulo;
+  document.getElementById('rev-extracto').value  = art.extracto;
+  document.getElementById('rev-contenido').value = art.contenido;
+  document.getElementById('rev-hashtags').value  = art.hashtags.join(' ');
+  const revCat = document.getElementById('rev-categoria');
+  revCat.value = art.categoria;
+}
+
+function syncReview(field, val) {
+  if (field === 'hashtags') {
+    art.hashtags = val.split(/\s+/).filter(h => h.startsWith('#'));
+  } else {
+    art[field] = val;
+  }
+  renderPreview();
+}
+
+// ══════════════════════════════════════════════════════
+//  AI — GENERATE ARTICLE
+// ══════════════════════════════════════════════════════
+async function generateArticle() {
+  const topic = document.getElementById('inp-topic').value.trim();
+  if (!topic) { showToast('Escribe el tema de la noticia primero', 'error'); return; }
+  const btn = document.getElementById('btn-generate');
+  setLoading(btn, true, 'Generando con IA...');
+  const res = await apiCall('ia.php', 'POST', { prompt: topic, accion: 'noticia' });
+  setLoading(btn, false, '<i class="fas fa-magic"></i> Generar noticia con IA');
+  if (res.ok && res.data) {
+    art.titulo    = res.data.titulo    || '';
+    art.extracto  = res.data.extracto  || '';
+    art.contenido = res.data.contenido || '';
+    art.categoria = res.data.categoria || 'Movilidad';
+    art.hashtags  = res.data.hashtags  || [];
+    document.getElementById('inp-titulo').value    = art.titulo;
+    document.getElementById('inp-extracto').value  = art.extracto;
+    document.getElementById('inp-contenido').value = art.contenido;
+    document.getElementById('inp-categoria').value = art.categoria;
+    document.getElementById('inp-hashtags').value  = art.hashtags.join(' ');
+    renderPreview();
+    showToast('¡Noticia generada con éxito!', 'success');
+  } else {
+    showToast(res.error || 'Error al generar la noticia', 'error');
+  }
+}
+
+async function improveContent() {
+  const content = art.contenido.trim();
+  if (!content) { showToast('No hay contenido para mejorar', 'error'); return; }
+  showToast('Mejorando redacción...', 'info');
+  const res = await apiCall('ia.php', 'POST', { prompt: content, accion: 'mejora' });
+  if (res.ok && res.data?.contenido) {
+    art.contenido = res.data.contenido;
+    document.getElementById('inp-contenido').value = art.contenido;
+    renderPreview();
+    showToast('¡Redacción mejorada!', 'success');
+  } else showToast(res.error || 'Error al mejorar', 'error');
+}
+
+// ══════════════════════════════════════════════════════
+//  AI — GENERATE IMAGE
+// ══════════════════════════════════════════════════════
+function autoFillImagePrompt() {
+  const prompt = `Fotografía periodística profesional, estilo editorial de noticias colombianas. Escena relacionada con: ${art.titulo || 'movilidad vial y tráfico en el Quindío'}. Imagen en estilo fotoreportaje, iluminación natural, colores cálidos y vibrantes, sin texto ni logos, alta calidad 16:9, transmitiendo seriedad y profesionalismo.`;
+  document.getElementById('inp-image-prompt').value = prompt;
+}
+
+async function generateImage() {
+  const prompt = document.getElementById('inp-image-prompt').value.trim();
+  if (!prompt) { showToast('Escribe un prompt para la imagen', 'error'); return; }
+  const btn = document.getElementById('btn-gen-image');
+  setLoading(btn, true, 'Generando imagen...');
+  const res = await apiCall('ia.php', 'POST', { prompt, accion: 'imagen', aspectRatio: '16:9' });
+  setLoading(btn, false, '<i class="fas fa-magic"></i> Generar imagen con IA');
+  if (res.ok && res.data?.base64) {
+    const dataUrl = `data:image/jpeg;base64,${res.data.base64}`;
+    art.imagen_url = dataUrl;
+    showImagePreview(dataUrl);
+    renderPreview();
+    showToast('¡Imagen generada!', 'success');
+  } else {
+    showToast(res.error || 'Error al generar imagen', 'error');
+  }
+}
+
+function showImagePreview(url) {
+  const img = document.getElementById('img-preview');
+  const placeholder = document.getElementById('img-placeholder');
+  img.src = url;
+  img.style.display = 'block';
+  placeholder.style.display = 'none';
+}
+
+async function handleImageUpload(input, target) {
+  const file = input.files[0];
+  if (!file) return;
+  if (target === 'main') {
+    const reader = new FileReader();
+    reader.onload = e => { art.imagen_url = e.target.result; showImagePreview(e.target.result); renderPreview(); };
+    reader.readAsDataURL(file);
+    // Upload to server in background
+    uploadImageFile(file);
+  }
+}
+
+async function uploadImageFile(file) {
+  const fd = new FormData();
+  fd.append('image', file);
+  const res = await apiCall('upload.php', 'POST', fd, true);
+  if (res.ok && res.url) { art.imagen_url = res.url; }
+}
+
+function setImageFromUrl() {
+  const url = document.getElementById('inp-img-url').value.trim();
+  if (!url) return;
+  art.imagen_url = url;
+  showImagePreview(url);
+  renderPreview();
+}
+
+// ══════════════════════════════════════════════════════
+//  ADS
+// ══════════════════════════════════════════════════════
+async function handleAdUpload(input, espacio) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Show local preview immediately
+  const reader = new FileReader();
+  reader.onload = e => {
+    setAdPreview(espacio, e.target.result);
+    renderAdInArticlePreview(espacio, e.target.result);
+  };
+  reader.readAsDataURL(file);
+
+  // Upload to server
+  const fd = new FormData();
+  fd.append('image', file);
+  const upRes = await apiCall('upload.php', 'POST', fd, true);
+  if (upRes.ok && upRes.url) {
+    art.ads[espacio].imagen_url = upRes.url;
+    // Save to DB if article exists
+    if (art.id) saveAdToDb(espacio);
+  }
+}
+
+async function saveAdToDb(espacio) {
+  const linkUrl = document.getElementById(`ad-link-${espacio}`)?.value || '';
+  art.ads[espacio].link_url = linkUrl;
+  await apiCall('publicidad.php', 'POST', {
+    noticia_id: art.id,
+    espacio,
+    imagen_url: art.ads[espacio].imagen_url,
+    link_url: linkUrl
+  });
+}
+
+function setAdPreview(espacio, url) {
+  const thumb = document.getElementById(`ad-thumb-${espacio}`);
+  const img   = document.getElementById(`ad-img-${espacio}`);
+  img.src = url;
+  thumb.classList.add('ad-uploaded');
+}
+
+function renderAdInArticlePreview(espacio, url) {
+  const pvImg = document.getElementById(`pv-img-${espacio}`);
+  if (!pvImg) return;
+  pvImg.src = url;
+  const container = pvImg.parentElement;
+  container.classList.add('has-img');
+}
+
+// ══════════════════════════════════════════════════════
+//  SAVE DRAFT
+// ══════════════════════════════════════════════════════
+async function saveDraftSilent() {
+  if (!art.titulo.trim()) return;
+  const payload = {
+    titulo: art.titulo, extracto: art.extracto, contenido: art.contenido,
+    categoria: art.categoria, imagen_url: art.imagen_url.startsWith('data:') ? '' : art.imagen_url,
+    estado: 'borrador', fecha: art.fecha, autor: 'Redacción SV'
+  };
+  if (art.id) payload.id = art.id;
+  const res = await apiCall('noticias.php', 'POST', payload);
+  if (res.ok) {
+    if (!art.id && res.id) art.id = res.id;
+    showToast('Borrador guardado', 'info');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  PUBLISH
+// ══════════════════════════════════════════════════════
+function populateSummary() {
+  document.getElementById('sum-titulo').textContent   = art.titulo || '(sin título)';
+  document.getElementById('sum-extracto').textContent = art.extracto || '';
+  document.getElementById('sum-fecha').textContent    = art.fecha;
+  const catBadge = document.getElementById('sum-categoria');
+  catBadge.textContent = art.categoria;
+  catBadge.className = 'status-badge borrador';
+  if (art.imagen_url) {
+    const si = document.getElementById('sum-img');
+    si.src = art.imagen_url;
+    si.classList.add('visible');
+  }
+  const adNames = { banner_superior:'Superior', lateral_der:'Lateral', banner_medio:'Medio', banner_inferior:'Inferior' };
+  const chipsContainer = document.getElementById('sum-ads');
+  chipsContainer.innerHTML = '';
+  Object.entries(adNames).forEach(([key, label]) => {
+    const chip = document.createElement('span');
+    const hasSrc = !!art.ads[key].imagen_url;
+    chip.className = 'ad-chip ' + (hasSrc ? 'filled' : 'empty');
+    chip.innerHTML = `<i class="fas fa-${hasSrc ? 'check-circle' : 'circle'}"></i>${label}`;
+    chipsContainer.appendChild(chip);
+  });
+}
+
+async function publishArticle() {
+  const btn = document.getElementById('btn-publish');
+  setLoading(btn, true, 'Publicando...');
+
+  // Upload base64 image if needed
+  if (art.imagen_url.startsWith('data:')) {
+    const blob = dataURLtoBlob(art.imagen_url);
+    const fd = new FormData();
+    fd.append('image', blob, 'portada.jpg');
+    const upRes = await apiCall('upload.php', 'POST', fd, true);
+    if (upRes.ok && upRes.url) art.imagen_url = upRes.url;
+  }
+
+  // Save/update article as published
+  const payload = {
+    titulo: art.titulo, extracto: art.extracto, contenido: art.contenido,
+    categoria: art.categoria, imagen_url: art.imagen_url,
+    estado: 'publicado', publicado: 1,
+    fecha: art.fecha, autor: 'Redacción SV'
+  };
+  if (art.id) payload.id = art.id;
+
+  const res = await apiCall('noticias.php', 'POST', payload);
+  if (!res.ok) { setLoading(btn, false, '<i class="fas fa-rocket"></i> Aprobar y publicar ahora'); showToast(res.error || 'Error al publicar', 'error'); return; }
+  if (!art.id && res.id) art.id = res.id;
+
+  // Save any pending ads
+  for (const espacio of Object.keys(art.ads)) {
+    if (art.ads[espacio].imagen_url && !art.ads[espacio].imagen_url.startsWith('data:')) {
+      await saveAdToDb(espacio);
+    }
+  }
+
+  // Update status badge
+  const badge = document.getElementById('status-badge');
+  badge.textContent = 'Publicado';
+  badge.className = 'status-badge publicado';
+
+  setLoading(btn, false, '');
+  document.querySelector('.summary-card').style.display = 'none';
+  document.querySelector('.publish-cta').style.display = 'none';
+  document.getElementById('success-screen').classList.add('show');
+  showToast('¡Noticia publicada exitosamente!', 'success');
+}
+
+function dataURLtoBlob(dataURL) {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8 = new Uint8Array(n);
+  while(n--) u8[n] = bstr.charCodeAt(n);
+  return new Blob([u8], {type: mime});
+}
+
+function resetWorkflow() {
+  art.id=null; art.titulo=''; art.extracto=''; art.contenido=''; art.categoria='Movilidad';
+  art.imagen_url=''; art.hashtags=[]; art.fecha=new Date().toISOString().split('T')[0];
+  Object.keys(art.ads).forEach(k => { art.ads[k]={imagen_url:'',link_url:''}; });
+  ['inp-titulo','inp-extracto','inp-contenido','inp-hashtags','inp-topic','inp-img-url'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('inp-fecha').value = art.fecha;
+  document.getElementById('inp-categoria').value = 'Movilidad';
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-placeholder').style.display = 'flex';
+  document.querySelector('.summary-card').style.display = 'block';
+  document.querySelector('.publish-cta').style.display = 'block';
+  document.getElementById('success-screen').classList.remove('show');
+  document.getElementById('status-badge').textContent = 'Borrador';
+  document.getElementById('status-badge').className = 'status-badge borrador';
+  goToStep(1);
+  renderPreview();
+}
+
+// ══════════════════════════════════════════════════════
+//  LOAD EXISTING ARTICLE (edit mode)
+// ══════════════════════════════════════════════════════
+async function loadArticle(id) {
+  const res = await apiCall(`noticias.php?id=${id}`, 'GET');
+  if (!res.ok || !res.data) return;
+  const d = res.data;
+  art.id = d.id; art.titulo = d.titulo; art.extracto = d.extracto;
+  art.contenido = d.contenido; art.categoria = d.categoria;
+  art.imagen_url = d.imagen_url || ''; art.fecha = d.fecha;
+  document.getElementById('inp-titulo').value    = art.titulo;
+  document.getElementById('inp-extracto').value  = art.extracto;
+  document.getElementById('inp-contenido').value = art.contenido;
+  document.getElementById('inp-categoria').value = art.categoria;
+  document.getElementById('inp-fecha').value     = art.fecha;
+  if (art.imagen_url) { showImagePreview(art.imagen_url); }
+  renderPreview();
+  showToast('Artículo cargado para edición', 'info');
+}
+
+// ══════════════════════════════════════════════════════
+//  LIVE PREVIEW
+// ══════════════════════════════════════════════════════
+function renderPreview() {
+  setText('pv-title',   art.titulo   || 'El título del artículo aparecerá aquí');
+  setText('pv-excerpt', art.extracto || 'El extracto del artículo aparecerá aquí...');
+  setText('pv-category', art.categoria || 'Categoría');
+  setText('pv-cat2',    art.categoria || '—');
+  setText('pv-fecha',   art.fecha    || '—');
+
+  // Content HTML
+  const contentEl = document.getElementById('pv-content');
+  contentEl.innerHTML = art.contenido || '<p style="color:#94a3b8;font-style:italic">El contenido aparecerá aquí...</p>';
+
+  // Hero image
+  const hero        = document.getElementById('pv-hero');
+  const placeholder = document.getElementById('pv-hero-placeholder');
+  if (art.imagen_url) {
+    hero.src = art.imagen_url;
+    hero.classList.add('visible');
+    placeholder.classList.add('hidden');
+  } else {
+    hero.classList.remove('visible');
+    placeholder.classList.remove('hidden');
+  }
+
+  // Tags
+  const tagsEl = document.getElementById('pv-tags');
+  tagsEl.innerHTML = art.hashtags.map(h => `<span class="p-tag">${h}</span>`).join('');
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ══════════════════════════════════════════════════════
+//  DEVICE PREVIEW
+// ══════════════════════════════════════════════════════
+function setDevice(dev) {
+  ['desktop','tablet','mobile'].forEach(d => {
+    document.getElementById(`dev-${d}`).classList.toggle('active', d === dev);
+  });
+  const frame = document.getElementById('preview-frame');
+  frame.className = 'preview-frame' + (dev !== 'desktop' ? ` ${dev}` : '');
+  // Hide sidebar on mobile/tablet
+  const sidebar = frame.querySelector('.p-article-sidebar');
+  if (sidebar) sidebar.style.display = dev === 'desktop' ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════════════════
+//  DRAG & DROP
+// ══════════════════════════════════════════════════════
+function handleDrag(e, el) {
+  e.preventDefault();
+  el.classList.add('dragover');
+}
+function handleDrop(e, target) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  if (target === 'main') {
+    const reader = new FileReader();
+    reader.onload = ev => { art.imagen_url = ev.target.result; showImagePreview(ev.target.result); renderPreview(); };
+    reader.readAsDataURL(file);
+    uploadImageFile(file);
+  } else {
+    const reader = new FileReader();
+    reader.onload = ev => { setAdPreview(target, ev.target.result); renderAdInArticlePreview(target, ev.target.result); };
+    reader.readAsDataURL(file);
+    handleAdUploadFile(file, target);
+  }
+}
+
+async function handleAdUploadFile(file, espacio) {
+  const fd = new FormData();
+  fd.append('image', file);
+  const res = await apiCall('upload.php', 'POST', fd, true);
+  if (res.ok && res.url) {
+    art.ads[espacio].imagen_url = res.url;
+    if (art.id) saveAdToDb(espacio);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════════
+function setLoading(btn, loading, html) {
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<div class="spinner"></div> ' + html.replace(/<[^>]+>/g,'')
+    : html;
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item toast-${type}`;
+  const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle';
+  el.innerHTML = `<i class="fas fa-${icon}"></i>${msg}`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.animation = 'slideOut .3s ease forwards'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+checkAuth();
+</script>
+</body>
+</html>

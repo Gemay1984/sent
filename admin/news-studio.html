@@ -78,8 +78,12 @@
 
                 <div class="space-y-3">
                     <label class="text-[10px] uppercase tracking-widest text-slate-500 font-black">Acciones Multimedia</label>
+                    <div id="dropzone-context" class="w-full h-16 border-2 border-dashed border-slate-700 flex items-center justify-center text-[10px] uppercase tracking-widest text-slate-500 hover:border-yellow-400 transition-all cursor-pointer group" onclick="document.getElementById('input-context').click()">
+                        <span id="context-text" class="group-hover:text-yellow-400">1. Subir Contexto (Documento/Foto)</span>
+                        <input type="file" id="input-context" accept="image/*" class="hidden" onchange="handleContext(this)">
+                    </div>
                     <div id="dropzone" class="w-full h-16 border-2 border-dashed border-slate-700 flex items-center justify-center text-[10px] uppercase tracking-widest text-slate-500 hover:border-yellow-400 transition-all cursor-pointer group" onclick="document.getElementById('input-file').click()">
-                        <span id="dropzone-text" class="group-hover:text-yellow-400">Subir Fotografía (Opcional)</span>
+                        <span id="dropzone-text" class="group-hover:text-yellow-400">2. Forzar Foto Final (Opcional)</span>
                         <input type="file" id="input-file" accept="image/*" class="hidden" onchange="handleImage(this)">
                     </div>
                     <button onclick="resetEditor()" class="text-[9px] uppercase tracking-widest text-slate-500 hover:text-yellow-400 transition-colors">
@@ -201,6 +205,7 @@
         const getToken = () => localStorage.getItem('sv_admin_token') || sessionStorage.getItem('sv_admin_token');
 
         let currentImageB64 = null;
+        let contextImageB64 = null;
         let generatedData = null;
 
         function handleImage(input) {
@@ -210,7 +215,20 @@
                 reader.onloadend = () => {
                     currentImageB64 = reader.result;
                     document.getElementById('dropzone').classList.add('border-red-600', 'bg-red-600/10');
-                    document.getElementById('dropzone-text').innerHTML = '<span class="text-red-400">Imagen Cargada ✓</span>';
+                    document.getElementById('dropzone-text').innerHTML = '<span class="text-red-400">Foto Final ✓</span>';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleContext(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    contextImageB64 = reader.result;
+                    document.getElementById('dropzone-context').classList.add('border-yellow-500', 'bg-yellow-500/10');
+                    document.getElementById('context-text').innerHTML = '<span class="text-yellow-400">Contexto Cargado ✓</span>';
                 };
                 reader.readAsDataURL(file);
             }
@@ -219,9 +237,12 @@
         function resetEditor() {
             document.getElementById('input-facts').value = '';
             currentImageB64 = null;
+            contextImageB64 = null;
             generatedData = null;
             document.getElementById('dropzone').classList.remove('border-red-600', 'bg-red-600/10');
-            document.getElementById('dropzone-text').innerText = 'Subir Fotografía (Opcional)';
+            document.getElementById('dropzone-text').innerText = '2. Forzar Foto Final (Opcional)';
+            document.getElementById('dropzone-context').classList.remove('border-yellow-500', 'bg-yellow-500/10');
+            document.getElementById('context-text').innerText = '1. Subir Contexto (Documento/Foto)';
             
             document.getElementById('state-empty').classList.remove('hidden');
             document.getElementById('state-result').classList.add('hidden');
@@ -230,7 +251,10 @@
 
         async function generateNews() {
             const facts = document.getElementById('input-facts').value.trim();
-            if (!facts) return;
+            if (!facts && !contextImageB64) {
+                alert('Ingresa los hechos o sube un documento fotográfico de contexto.');
+                return;
+            }
 
             const btn = document.getElementById('btn-generate');
             btn.disabled = true;
@@ -242,10 +266,13 @@
 
             try {
                 // 1. Generar texto
+                const payload = { prompt: facts || 'Analiza esta imagen y genera una noticia de actualidad basada en su contenido.', accion: 'noticia' };
+                if (contextImageB64) payload.imagen_b64 = contextImageB64;
+
                 const resText = await fetch('../api/ia.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
-                    body: JSON.stringify({ prompt: facts, accion: 'noticia' })
+                    body: JSON.stringify(payload)
                 });
                 const dataText = await resText.json();
                 
@@ -253,12 +280,20 @@
                 
                 generatedData = dataText.data;
 
-                // 2. Si no hay imagen, generar una con IA
+                // 2. Si no hay imagen manual (forzada), generar imagen DESPUÉS del texto usando todo el contexto
                 let finalImage = currentImageB64;
                 if (!finalImage) {
-                    btn.innerHTML = '<i class="fas fa-camera fa-fade"></i> Generando Fotografía...';
-                    const promptImg = `Fotografia realista periodistica, alta calidad, Quindio Colombia: ${generatedData.titulo}`;
-                    const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptImg)}?width=1000&height=1000&nologo=true`;
+                    btn.innerHTML = '<i class="fas fa-camera fa-fade"></i> Generando Fotografía contextual...';
+                    
+                    // Extraer palabras clave del título y contenido para un prompt más preciso
+                    const titulo = generatedData.titulo || '';
+                    const categoria = generatedData.categoria || '';
+                    const extracto = generatedData.extracto || '';
+                    
+                    // Construir un prompt altamente específico basado en el contenido generado
+                    const promptImg = `Photojournalism, sharp focus, realistic photograph. Topic: "${titulo}". Category: ${categoria}. Context: ${extracto.slice(0,150)}. No text overlay, no watermarks, no logos, ultra-realistic, press photo quality, detailed.`;
+                    
+                    const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptImg)}?width=1000&height=1000&nologo=true&seed=${Date.now()}`;
                     
                     try {
                         const resPoll = await fetch(imgUrl);

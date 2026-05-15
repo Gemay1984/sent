@@ -201,6 +201,11 @@ const admin = {
                 <button class="btn btn-outline admin-tab" onclick="admin.showTab('clasificados',this)">
                     <i class="fas fa-car"></i> Clasificados
                 </button>
+                <a href="admin/editorial.html" target="_blank"
+                   class="btn btn-outline"
+                   style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;font-size:0.8rem;border-color:#fac213;color:#fac213;text-decoration:none;font-weight:700;">
+                    <i class="fas fa-pen-nib"></i> Sala de Redacción
+                </a>
                 <a href="admin/image-studio.html" target="_blank"
                    class="btn btn-outline"
                    style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;font-size:0.8rem;border-color:#7c3aed;color:#a78bfa;text-decoration:none;">
@@ -252,9 +257,14 @@ const admin = {
         <div class="glass p-6 mb-6">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
                 <h3>Noticias publicadas</h3>
-                <a href="admin/news-studio.html" target="_blank" class="btn btn-primary" style="text-decoration:none;">
-                    <i class="fas fa-magic"></i> News Architect
-                </a>
+                <div style="display:flex;gap:.5rem;">
+                    <a href="admin/editorial.html" target="_blank" class="btn btn-primary" style="text-decoration:none;">
+                        <i class="fas fa-pen-nib"></i> Nueva noticia
+                    </a>
+                    <a href="admin/news-studio.html" target="_blank" class="btn btn-outline" style="text-decoration:none;font-size:.8rem;">
+                        <i class="fas fa-magic"></i> IA Avanzada
+                    </a>
+                </div>
             </div>
             <div id="lista-noticias"><p style="color:var(--text-muted)">Cargando...</p></div>
         </div>`;

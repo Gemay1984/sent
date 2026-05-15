@@ -10,12 +10,27 @@ USE sentidovial_db;
 CREATE TABLE IF NOT EXISTS noticias (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     titulo      VARCHAR(300)  NOT NULL,
+    slug        VARCHAR(400)  DEFAULT '',
     extracto    TEXT          NOT NULL,
     contenido   LONGTEXT      NOT NULL,
     categoria   VARCHAR(80)   NOT NULL DEFAULT 'Movilidad',
     imagen_url  VARCHAR(600)  DEFAULT '',
     publicado   TINYINT(1)    NOT NULL DEFAULT 1,
+    estado      ENUM('borrador','revision','aprobado','publicado') NOT NULL DEFAULT 'publicado',
+    autor       VARCHAR(100)  DEFAULT 'Redacción SV',
+    aprobado_en DATETIME      DEFAULT NULL,
     fecha       DATE          NOT NULL,
+    creado_en   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ── PUBLICIDAD (espacios publicitarios por noticia) ─────────────
+CREATE TABLE IF NOT EXISTS publicidad (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    noticia_id  INT           NOT NULL,
+    espacio     ENUM('banner_superior','lateral_der','banner_medio','banner_inferior') NOT NULL,
+    imagen_url  VARCHAR(600)  DEFAULT '',
+    link_url    VARCHAR(600)  DEFAULT '',
+    activo      TINYINT(1)    NOT NULL DEFAULT 1,
     creado_en   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
